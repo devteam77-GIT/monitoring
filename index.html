@@ -1471,6 +1471,32 @@
     </div>
 
     
+    <!-- DETAILED CLIENT CONNECTIONS (ADDED PER REQUEST) -->
+    <section class="panel-card" style="margin-bottom: 16px;">
+        <div class="panel-header">
+            <div class="panel-title-wrap">
+                <i class="fas fa-users" style="color: #38bdf8; font-size: 16px; margin-right: 8px;"></i>
+                <div class="panel-title">Active Client Connections</div>
+            </div>
+        </div>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; font-family: var(--font-mono);">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted);">
+                        <th style="padding: 10px 8px;">Session Identifier</th>
+                        <th style="padding: 10px 8px;">Account Name</th>
+                        <th style="padding: 10px 8px;">Database</th>
+                        <th style="padding: 10px 8px;">Host Name / IP</th>
+                        <th style="padding: 10px 8px;">Client</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                    <tr><td colspan="5" style="padding: 16px; text-align: center; color: var(--text-dim);">Loading clients...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <!-- CONNECTED USERS & USAGE -->
     <div class="user-usage-grid">
       <!-- Left: Users List -->
@@ -1605,7 +1631,7 @@ FileMaker.PerformScriptWithOption(
       lastSync: new Date(),
       pollInterval: 3000,
       nextPollSec: 3,
-      n8nWebhookUrl: '',
+      n8nWebhookUrl: 'https://fms.n8n.lexisolution.com/webhook/fms-live-dashboard',
       hasSpike: true,
       alert: {
         active: true,
@@ -2107,6 +2133,28 @@ FileMaker.PerformScriptWithOption(
 
       // Hosted Databases List
       renderDatabaseList();
+
+      // Clients List
+      if (state.connectedUsersData) {
+          const tbody = document.getElementById('clientsTableBody');
+          if (state.connectedUsersData.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="padding: 16px; text-align: center; color: var(--text-dim);">No active clients connected.</td></tr>';
+          } else {
+              tbody.innerHTML = state.connectedUsersData.map(c => `
+                  <tr style="border-bottom: 1px solid var(--border-subtle); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                      <td style="padding: 10px 8px; color: #fff;">${c.sessionIdentifier}</td>
+                      <td style="padding: 10px 8px; color: var(--text-muted);">${c.accountName}</td>
+                      <td style="padding: 10px 8px; color: var(--cyan-bright);">${c.database}</td>
+                      <td style="padding: 10px 8px; color: var(--text-muted);">${c.ipAddress}</td>
+                      <td style="padding: 10px 8px;">
+                          <span style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                              ${c.clientType}
+                          </span>
+                      </td>
+                  </tr>
+              `).join('');
+          }
+      }
     }
 
     function renderDatabaseList() {
@@ -2214,13 +2262,31 @@ FileMaker.PerformScriptWithOption(
         console.log("FMS Dashboard received payload:", payload);
 
         if (payload.serverHost) state.serverHost = payload.serverHost;
-        if (payload.elapsed !== undefined) state.metrics.elapsed = parseFloat(payload.elapsed);
-        if (payload.cacheHit !== undefined) state.metrics.cacheHit = parseFloat(payload.cacheHit);
-        if (payload.cpu !== undefined) state.metrics.cpu = parseFloat(payload.cpu);
-        if (payload.sessions !== undefined) state.metrics.sessions = parseInt(payload.sessions, 10);
+        if (payload.metrics) {
+            state.metrics.elapsed = payload.metrics.elapsed !== undefined ? parseFloat(payload.metrics.elapsed) : state.metrics.elapsed;
+            state.metrics.cacheHit = payload.metrics.cacheHit !== undefined ? parseFloat(payload.metrics.cacheHit) : state.metrics.cacheHit;
+            state.metrics.unsavedCache = payload.metrics.unsavedCache !== undefined ? parseFloat(payload.metrics.unsavedCache) : state.metrics.unsavedCache;
+            state.metrics.cpu = payload.metrics.cpu !== undefined ? parseFloat(payload.metrics.cpu) : state.metrics.cpu;
+            state.metrics.sessions = payload.metrics.sessions !== undefined ? parseInt(payload.metrics.sessions, 10) : state.metrics.sessions;
+            state.metrics.sessionsMax = payload.metrics.sessionsMax !== undefined ? parseInt(payload.metrics.sessionsMax, 10) : state.metrics.sessionsMax;
+            state.metrics.remoteCalls = payload.metrics.remoteCalls !== undefined ? parseInt(payload.metrics.remoteCalls, 10) : state.metrics.remoteCalls;
+            state.metrics.ioTime = payload.metrics.ioTime !== undefined ? parseFloat(payload.metrics.ioTime) : state.metrics.ioTime;
+            state.metrics.ramUsed = payload.metrics.ramUsed !== undefined ? parseFloat(payload.metrics.ramUsed) : state.metrics.ramUsed;
+            state.metrics.netIn = payload.metrics.netIn !== undefined ? parseFloat(payload.metrics.netIn) : state.metrics.netIn;
+            state.metrics.netOut = payload.metrics.netOut !== undefined ? parseFloat(payload.metrics.netOut) : state.metrics.netOut;
+            if (payload.metrics.breakdown) {
+                state.metrics.breakdown = payload.metrics.breakdown;
+            }
+        } else {
+            if (payload.elapsed !== undefined) state.metrics.elapsed = parseFloat(payload.elapsed);
+            if (payload.cacheHit !== undefined) state.metrics.cacheHit = parseFloat(payload.cacheHit);
+            if (payload.cpu !== undefined) state.metrics.cpu = parseFloat(payload.cpu);
+            if (payload.sessions !== undefined) state.metrics.sessions = parseInt(payload.sessions, 10);
+        }
         if (payload.databases) state.databases = payload.databases;
+        if (payload.connectedUsers) state.connectedUsersData = payload.connectedUsers;
         if (payload.alert) {
-          state.alert.active = true;
+          state.alert.active = payload.alert.active;
           state.alert.title = payload.alert.title || "ALERT DETECTED";
           state.alert.desc = payload.alert.desc || "";
         }
