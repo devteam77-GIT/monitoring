@@ -1175,7 +1175,7 @@
       <!-- 1. ELAPSED TIME / CALL -->
       <div class="metric-card card-alert" id="cardElapsed">
         <div class="metric-card-top">
-          <div class="metric-title">ELAPSED TIME / CALL</div>
+          <div class="metric-title">ELAPSED TIME / CALL <span title='Average time the server spends processing each request' style='cursor:help; font-size:12px; color:#8b9bb4;'>(?)</span></div>
           <div class="metric-icon-bubble bubble-cyan">
             <!-- Timer SVG -->
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1200,7 +1200,7 @@
       <!-- 2. CACHE HIT RATIO -->
       <div class="metric-card">
         <div class="metric-card-top">
-          <div class="metric-title">CACHE HIT RATIO</div>
+          <div class="metric-title">CACHE HIT RATIO <button onclick='flushCache(event)' style='background:transparent; border:1px solid #00f2fe; color:#00f2fe; border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer; margin-left:10px; text-transform:uppercase;'>Flush</button></div>
           <div class="metric-icon-bubble bubble-emerald">
             <!-- Zap / Lightning SVG -->
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1224,7 +1224,7 @@
       <!-- 3. REMOTE CALLS / SEC -->
       <div class="metric-card">
         <div class="metric-card-top">
-          <div class="metric-title">REMOTE CALLS / SEC</div>
+          <div class="metric-title">REMOTE CALLS / SEC <span title='Number of incoming RPC requests from FileMaker Pro/Go/WebDirect clients' style='cursor:help; font-size:12px; color:#8b9bb4;'>(?)</span></div>
           <div class="metric-icon-bubble bubble-purple">
             <!-- Network Hierarchy SVG -->
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1281,7 +1281,7 @@
       <!-- 5. HOST CPU UTILIZATION -->
       <div class="metric-card">
         <div class="metric-card-top">
-          <div class="metric-title">HOST CPU UTILIZATION</div>
+          <div class="metric-title">CPU USAGE</div>
           <div class="metric-icon-bubble bubble-blue">
             <!-- CPU SVG -->
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1314,7 +1314,7 @@
       <!-- 6. HOST RAM ALLOCATION -->
       <div class="metric-card">
         <div class="metric-card-top">
-          <div class="metric-title">HOST RAM ALLOCATION</div>
+          <div class="metric-title">MEMORY USAGE</div>
           <div class="metric-icon-bubble bubble-indigo">
             <!-- RAM chip SVG -->
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -2093,7 +2093,7 @@ FileMaker.PerformScriptWithOption(
       const diskPct = ((m.diskUsed / m.diskTotal) * 100).toFixed(1);
       document.getElementById('fillDisk').style.width = `${diskPct}%`;
       document.getElementById('tagDiskPercent').innerText = `${diskPct}%`;
-      document.getElementById('subDiskFree').innerText = `Free: ${m.diskTotal - m.diskUsed} GB`;
+      document.getElementById('subDiskFree').innerText = `Free: ${(m.diskTotal - m.diskUsed).toFixed(2)} GB`;
 
       // Network
       document.getElementById('valNetwork').innerText = m.netTotal.toFixed(1);
