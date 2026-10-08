@@ -281,14 +281,8 @@
       background: rgba(255, 255, 255, 0.1);
       border-color: var(--border-highlight);
     }
-    .btn-action.sim-toggle {
-      border-color: rgba(245, 158, 11, 0.4);
-      color: #fcd34d;
       background: rgba(245, 158, 11, 0.08);
     }
-    .btn-action.sim-toggle.off {
-      border-color: var(--border-subtle);
-      color: var(--text-dim);
       background: rgba(255, 255, 255, 0.04);
     }
 
@@ -1088,7 +1082,7 @@
         </div>
         <div class="brand-title-wrap">
           <div class="brand-title">
-            FMS OPS CENTER
+            MasterBOM Telemetry
           </div>
           <div class="host-badge" id="hostBadge" title="Click to edit server host">
             <span class="status-dot" id="globalStatusDot"></span>
@@ -1097,8 +1091,6 @@
         </div>
         
         <div class="env-pills">
-          <button class="env-pill active" onclick="switchEnv('Hitachi Prod')">Hitachi Prod</button>
-          <button class="env-pill inactive" onclick="switchEnv('Demo Env')">Demo Env</button>
         </div>
       </div>
 
@@ -1556,14 +1548,6 @@
         <button class="btn-action" onclick="exportDataJson()" title="Export current state as JSON payload">
           ⤓ Export JSON
         </button>
-        <button class="btn-action" onclick="openIntegrationModal()">
-          🔗 FileMaker &amp; n8n Setup
-        </button>
-      </div>
-    </footer>
-
-  </div>
-
   <!-- INTEGRATION & SETTINGS MODAL -->
   <div class="modal-overlay" id="integrationModal">
     <div class="modal-window">
@@ -1630,7 +1614,6 @@ FileMaker.PerformScriptWithOption(
        ========================================================================== */
     const state = {
       simMode: true,
-      currentEnv: 'Hitachi Prod',
       serverHost: 'https://hitachi.master-bom.com',
       lastSync: new Date(),
       pollInterval: 3000,
@@ -2281,6 +2264,9 @@ FileMaker.PerformScriptWithOption(
             state.metrics.ramTotal = payload.metrics.ramTotal !== undefined ? parseFloat(payload.metrics.ramTotal) : state.metrics.ramTotal;
             state.metrics.diskUsed = payload.metrics.diskUsed !== undefined ? parseFloat(payload.metrics.diskUsed) : state.metrics.diskUsed;
             state.metrics.diskTotal = payload.metrics.diskTotal !== undefined ? parseFloat(payload.metrics.diskTotal) : state.metrics.diskTotal;
+            state.metrics.ramTotal = payload.metrics.ramTotal !== undefined ? parseFloat(payload.metrics.ramTotal) : state.metrics.ramTotal;
+            state.metrics.diskUsed = payload.metrics.diskUsed !== undefined ? parseFloat(payload.metrics.diskUsed) : state.metrics.diskUsed;
+            state.metrics.diskTotal = payload.metrics.diskTotal !== undefined ? parseFloat(payload.metrics.diskTotal) : state.metrics.diskTotal;
             state.metrics.netIn = payload.metrics.netIn !== undefined ? parseFloat(payload.metrics.netIn) : state.metrics.netIn;
             state.metrics.netOut = payload.metrics.netOut !== undefined ? parseFloat(payload.metrics.netOut) : state.metrics.netOut;
             if (payload.metrics.breakdown) {
@@ -2427,7 +2413,6 @@ FileMaker.PerformScriptWithOption(
           pill.className = "env-pill inactive";
         }
       });
-      if (envName === 'Demo Env') {
         document.getElementById('serverHostDisplay').innerText = "https://demo.fms-cluster.internal";
       } else {
         document.getElementById('serverHostDisplay').innerText = state.serverHost;
@@ -2477,14 +2462,6 @@ FileMaker.PerformScriptWithOption(
     }
 
     // Modal controls
-    function openIntegrationModal() {
-      document.getElementById('integrationModal').classList.add('active');
-    }
-    function closeIntegrationModal() {
-      document.getElementById('integrationModal').classList.remove('active');
-    }
-    function copyIntegrationCode() {
-      const code = `Perform JavaScript in Web Viewer [ Object Name: "FMS_Viewer" ; Function Name: "window.setFMSData" ; Parameters: JSONSetElement ( "{}" ; [ "elapsed" ; 50.2 ; JSONNumber ] ; [ "cpu" ; 65.4 ; JSONNumber ] ; [ "sessions" ; 38 ; JSONNumber ] ) ]`;
       navigator.clipboard.writeText(code).then(() => {
         showToast("FileMaker script step copied to clipboard!");
       });
