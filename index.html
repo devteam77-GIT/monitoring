@@ -1129,6 +1129,17 @@
           ▶ Sim Mode: <span id="simModeText">ON</span>
         </button>
 
+        <div style="position: relative; display: inline-block;">
+          <button class="btn-action" style="border-color: #f87171; color: #f87171;" onclick="toggleRestartMenu()" title="Restart Services">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+            Restart
+          </button>
+          <div id="restartMenu" style="display: none; position: absolute; top: 110%; right: 0; background: var(--bg-dark); border: 1px solid #f87171; border-radius: 4px; padding: 4px 0; z-index: 1000; min-width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+            <div style="padding: 8px 12px; cursor: pointer; color: #e5e7eb; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);" onmouseover="this.style.background='rgba(248,113,113,0.1)'" onmouseout="this.style.background='transparent'" onclick="restartFMService('fmse')">Restart FMSE (Script Engine)</div>
+            <div style="padding: 8px 12px; cursor: pointer; color: #e5e7eb; font-size: 12px;" onmouseover="this.style.background='rgba(248,113,113,0.1)'" onmouseout="this.style.background='transparent'" onclick="restartFMService('adminserver')">Restart Admin Server</div>
+          </div>
+        </div>
+
         <button class="btn-action" onclick="triggerManualSync()" title="Fetch latest telemetry from n8n or FileMaker">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
@@ -2479,6 +2490,46 @@ FileMaker.PerformScriptWithOption(
       navigator.clipboard.writeText(code).then(() => {
         showToast("FileMaker script step copied to clipboard!");
       });
+    }
+
+    // Restart Services logic
+    function toggleRestartMenu() {
+      const menu = document.getElementById('restartMenu');
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Hide menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const menu = document.getElementById('restartMenu');
+      const btn = event.target.closest('button');
+      if (menu && menu.style.display === 'block' && (!btn || btn.getAttribute('onclick') !== 'toggleRestartMenu()')) {
+        menu.style.display = 'none';
+      }
+    });
+
+    async function restartFMService(serviceName) {
+      document.getElementById('restartMenu').style.display = 'none';
+      if (!confirm(`Are you sure you want to hard-restart '${serviceName}'? This may briefly disrupt active operations.`)) return;
+      
+      showToast(`Initiating restart for ${serviceName}...`);
+      
+      try {
+        const res = await fetch('https://fms.n8n.lexisolution.com/webhook/fms-service-restart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ service: serviceName })
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          showToast(`Successfully executed restart command for ${serviceName}!`);
+          console.log("Restart output:", data);
+        } else {
+          showToast(`Failed to restart ${serviceName}. HTTP ${res.status}`);
+        }
+      } catch (err) {
+        showToast(`Network error triggering restart: ${err.message}`);
+      }
     }
 
     // Toast helper
