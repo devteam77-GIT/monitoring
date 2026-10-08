@@ -779,6 +779,128 @@
       border: 1px solid rgba(245, 158, 11, 0.4);
     }
 
+    
+    /* CONNECTED USERS SECTION */
+    .user-usage-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 16px;
+    }
+    @media (max-width: 1100px) {
+      .user-usage-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .panel-tabs {
+      display: flex;
+      gap: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 12px;
+    }
+    .panel-tab {
+      padding: 8px 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .panel-tab.active {
+      color: #fff;
+      border-bottom-color: var(--cyan-bright);
+    }
+    .panel-tab:hover:not(.active) {
+      color: var(--text-main);
+    }
+
+    .user-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+
+    .user-list-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 12px;
+      transition: background 0.15s ease;
+    }
+    .user-list-row:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .user-entity-col {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-check {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .status-check::after {
+      content: '';
+      width: 6px;
+      height: 3px;
+      border-left: 1.5px solid #10b981;
+      border-bottom: 1.5px solid #10b981;
+      transform: rotate(-45deg);
+      margin-top: -2px;
+    }
+    .user-color-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .user-name {
+      font-family: var(--font-mono);
+      color: #e2e8f0;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-metric-col {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .multi-chart-container {
+      position: relative;
+      width: 100%;
+      height: 160px;
+      background: rgba(10, 16, 28, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 16px;
+    }
+    .multi-chart-title {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
     /* BOTTOM AUTOMATION & CONTROLS FOOTER */
     .bottom-bar {
       display: flex;
@@ -1348,6 +1470,44 @@
 
     </div>
 
+    
+    <!-- CONNECTED USERS & USAGE -->
+    <div class="user-usage-grid">
+      <!-- Left: Users List -->
+      <section class="panel-card">
+        <div class="panel-header" style="margin-bottom: 4px;">
+          <div class="panel-title-wrap">
+            <div class="panel-title" style="font-size: 16px;">5 Connected Users</div>
+          </div>
+        </div>
+        <div class="panel-tabs">
+          <div class="panel-tab active">System</div>
+          <div class="panel-tab">Network</div>
+          <div class="panel-tab">Processes</div>
+        </div>
+        
+        <div class="user-list-header">
+          <span>Entity</span>
+          <span>CPU usage (%) &or;</span>
+        </div>
+        <div id="usersListContainer">
+          <!-- JS will populate this -->
+        </div>
+      </section>
+
+      <!-- Right: Usage Charts -->
+      <section class="panel-card" style="padding-bottom: 0;">
+        <div class="multi-chart-container">
+          <div class="multi-chart-title">CPU usage (%)</div>
+          <canvas id="userCpuCanvas"></canvas>
+        </div>
+        <div class="multi-chart-container">
+          <div class="multi-chart-title">Memory usage (%)</div>
+          <canvas id="userMemCanvas"></canvas>
+        </div>
+      </section>
+    </div>
+
     <!-- BOTTOM AUTOMATION & BRIDGE STATUS BAR -->
     <footer class="bottom-bar">
       <div class="n8n-status-wrap">
@@ -1479,6 +1639,30 @@ FileMaker.PerformScriptWithOption(
         { name: "Inventory_Control.fmp12", size: "64 GB", clients: 6, status: "NORMAL" },
         { name: "Procurement_Data.fmp12", size: "51 GB", clients: 4, status: "NORMAL" }
       ],
+      connectedUsers: [
+        { name: "host-proxy-east-2", cpu: 23.62, color: "#3b82f6" },
+        { name: "host-proxy-east-0", cpu: 18.79, color: "#10b981" },
+        { name: "ip-172-20-37-165.internal", cpu: 12.45, color: "#8b5cf6" },
+        { name: "ip-172-20-62-216.internal", cpu: 7.98, color: "#f59e0b" },
+        { name: "host-proxy-east-1", cpu: 1.12, color: "#00e5ff" }
+      ],
+      userHistory: {
+        timestamps: [],
+        cpu: [
+          [20, 22, 25, 23, 21, 28, 30, 25, 24, 23, 23, 22, 23.62],
+          [15, 17, 18, 16, 17, 20, 22, 19, 18, 17, 18, 18, 18.79],
+          [10, 11, 10, 12, 11, 14, 15, 13, 12, 11, 12, 12, 12.45],
+          [5, 6, 5, 7, 6, 8, 9, 7, 6, 5, 6, 7, 7.98],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.12]
+        ],
+        mem: [
+          [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+          [10, 15, 20, 25, 30, 40, 50, 60, 65, 70, 75, 80, 85],
+          [2, 5, 10, 15, 25, 35, 45, 55, 65, 70, 75, 85, 95],
+          [40, 42, 43, 44, 45, 43, 42, 41, 42, 43, 44, 45, 46],
+          [50, 51, 50, 51, 50, 50, 50, 51, 50, 51, 50, 50, 50]
+        ]
+      },
       // History for time-series canvas graph (24 datapoints)
       history: {
         timestamps: [],
@@ -1520,6 +1704,8 @@ FileMaker.PerformScriptWithOption(
       ctx.resetTransform && ctx.resetTransform();
       ctx.scale(dpr, dpr);
       renderChart();
+      renderSmallChart('userCpuCanvas', state.userHistory.cpu, 40);
+      renderSmallChart('userMemCanvas', state.userHistory.mem, 100);
     }
 
     function renderChart() {
@@ -1713,6 +1899,119 @@ FileMaker.PerformScriptWithOption(
     /* ==========================================================================
        3. DOM UPDATING & DATA RENDERING
        ========================================================================== */
+    
+    /* ==========================================================================
+       USER USAGE CHARTS & LIST
+       ========================================================================== */
+    function renderUserList() {
+      const container = document.getElementById('usersListContainer');
+      if (!container) return;
+      container.innerHTML = state.connectedUsers.map(user => `
+        <div class="user-list-row">
+          <div class="user-entity-col">
+            <div class="status-check"></div>
+            <div class="user-color-dot" style="background: ${user.color}; box-shadow: 0 0 6px ${user.color}"></div>
+            <div class="user-name" title="${user.name}">${user.name}</div>
+          </div>
+          <div class="user-metric-col">${user.cpu.toFixed(2)} %</div>
+        </div>
+      `).join('');
+    }
+
+    function renderSmallChart(canvasId, dataMatrix, maxVal) {
+      const cvs = document.getElementById(canvasId);
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const rect = cvs.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      
+      cvs.width = rect.width * dpr;
+      cvs.height = rect.height * dpr;
+      ctx.resetTransform && ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const padLeft = 30;
+      const padRight = 10;
+      const padTop = 35;
+      const padBottom = 20;
+      const graphW = w - padLeft - padRight;
+      const graphH = h - padTop - padBottom;
+
+      // Draw Y grid
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "rgba(148, 163, 184, 0.6)";
+      ctx.font = "9px ui-monospace, monospace";
+      ctx.textAlign = "right";
+
+      const yTicks = 4;
+      for (let i = 0; i <= yTicks; i++) {
+        const y = padTop + (graphH / yTicks) * i;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(w - padRight, y);
+        ctx.stroke();
+        
+        const val = Math.round(maxVal - (maxVal / yTicks) * i);
+        ctx.fillText(val, padLeft - 6, y + 3);
+      }
+      
+      // Draw time labels (X axis mock)
+      ctx.textAlign = "center";
+      ctx.fillText("01:30 PM", padLeft + graphW*0.33, h - 5);
+      ctx.fillText("02:00 PM", padLeft + graphW*0.83, h - 5);
+
+      const n = dataMatrix[0].length;
+      if (n === 0) return;
+      const stepX = graphW / (n - 1);
+
+      dataMatrix.forEach((series, sIdx) => {
+        const color = state.connectedUsers[sIdx].color;
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        
+        series.forEach((val, idx) => {
+          const x = padLeft + idx * stepX;
+          const ratio = Math.min(Math.max(val / maxVal, 0), 1);
+          const y = padTop + graphH - ratio * graphH;
+          if (idx === 0) ctx.moveTo(x, y);
+          else {
+            const prevX = padLeft + (idx - 1) * stepX;
+            const prevVal = series[idx - 1];
+            const prevRatio = Math.min(Math.max(prevVal / maxVal, 0), 1);
+            const prevY = padTop + graphH - prevRatio * graphH;
+            const cx = (prevX + x) / 2;
+            ctx.bezierCurveTo(cx, prevY, cx, y, x, y);
+          }
+        });
+        ctx.stroke();
+      });
+    }
+
+    function updateUserUsage() {
+      // simulate new data
+      state.connectedUsers.forEach((u, i) => {
+        u.cpu = Math.max(0, u.cpu + (Math.random() * 4 - 2));
+        
+        state.userHistory.cpu[i].shift();
+        state.userHistory.cpu[i].push(u.cpu);
+
+        let lastMem = state.userHistory.mem[i][state.userHistory.mem[i].length - 1];
+        let newMem = Math.min(100, Math.max(0, lastMem + (Math.random() * 2 - 1)));
+        if (i === 1 && newMem > 90) newMem = 5; // drop simulated
+        state.userHistory.mem[i].shift();
+        state.userHistory.mem[i].push(newMem);
+      });
+      renderUserList();
+      renderSmallChart('userCpuCanvas', state.userHistory.cpu, 40);
+      renderSmallChart('userMemCanvas', state.userHistory.mem, 100);
+    }
+
     function updateDomMetrics() {
       const m = state.metrics;
 
@@ -1881,6 +2180,9 @@ FileMaker.PerformScriptWithOption(
 
       updateDomMetrics();
       renderChart();
+      updateUserUsage();
+      renderSmallChart('userCpuCanvas', state.userHistory.cpu, 40);
+      renderSmallChart('userMemCanvas', state.userHistory.mem, 100);
     }
 
     // Main Clock & Simulation Loop
@@ -2015,6 +2317,7 @@ FileMaker.PerformScriptWithOption(
       state.metrics.cpu = 65.4;
       updateDomMetrics();
       renderChart();
+      updateUserUsage();
       sendActionToFileMaker("SIMULATE_SPIKE_TRIGGERED");
       showToast("Triggered simulated latency spike");
     }
@@ -2105,11 +2408,6 @@ FileMaker.PerformScriptWithOption(
     function closeIntegrationModal() {
       document.getElementById('integrationModal').classList.remove('active');
     }
-    function saveSettings() {
-      state.n8nWebhookUrl = document.getElementById('n8nWebhookInput').value.trim();
-      closeIntegrationModal();
-      showToast("Integration settings saved");
-    }
     function copyIntegrationCode() {
       const code = `Perform JavaScript in Web Viewer [ Object Name: "FMS_Viewer" ; Function Name: "window.setFMSData" ; Parameters: JSONSetElement ( "{}" ; [ "elapsed" ; 50.2 ; JSONNumber ] ; [ "cpu" ; 65.4 ; JSONNumber ] ; [ "sessions" ; 38 ; JSONNumber ] ) ]`;
       navigator.clipboard.writeText(code).then(() => {
@@ -2127,10 +2425,97 @@ FileMaker.PerformScriptWithOption(
       }, 2500);
     }
 
+    /* ==========================================================================
+       7. REAL-TIME N8N WEBHOOK POLLING & URL PARAMS
+       ========================================================================== */
+    async function pollLiveN8nWebhook() {
+      if (!state.n8nWebhookUrl) return;
+      try {
+        const res = await fetch(state.n8nWebhookUrl, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          const liveData = await res.json();
+          window.setFMSData(liveData);
+          if (state.simMode) {
+            state.simMode = false;
+            document.getElementById('btnSimMode').classList.add('off');
+            document.getElementById('simModeText').innerText = "OFF (Live)";
+          }
+          document.getElementById('bridgeStatus').innerText = "n8n Live Webhook 200 OK";
+          document.getElementById('bridgeStatus').style.color = "#34d399";
+        } else {
+          document.getElementById('bridgeStatus').innerText = `n8n HTTP ${res.status}`;
+          document.getElementById('bridgeStatus').style.color = "#fbbf24";
+        }
+      } catch (err) {
+        console.warn("Live webhook poll error:", err);
+        document.getElementById('bridgeStatus').innerText = "n8n Webhook Offline";
+        document.getElementById('bridgeStatus').style.color = "#f87171";
+      }
+    }
+
+    function initUrlParamsAndStorage() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const webhookParam = urlParams.get('webhook');
+        const hostParam = urlParams.get('host');
+        const simParam = urlParams.get('sim');
+
+        const savedWebhook = localStorage.getItem('fms_n8n_webhook');
+        if (webhookParam) {
+          state.n8nWebhookUrl = webhookParam;
+          localStorage.setItem('fms_n8n_webhook', webhookParam);
+        } else if (savedWebhook) {
+          state.n8nWebhookUrl = savedWebhook;
+        }
+
+        if (state.n8nWebhookUrl) {
+          document.getElementById('n8nWebhookInput').value = state.n8nWebhookUrl;
+          document.getElementById('bridgeStatus').innerText = "n8n Poller Active";
+          // Trigger immediate fetch
+          pollLiveN8nWebhook();
+          // Poll every 5 seconds
+          setInterval(pollLiveN8nWebhook, 5000);
+        }
+
+        if (hostParam) {
+          state.serverHost = hostParam;
+          document.getElementById('serverHostDisplay').innerText = hostParam;
+        }
+
+        if (simParam === 'false' || simParam === 'off' || state.n8nWebhookUrl) {
+          state.simMode = false;
+          const btn = document.getElementById('btnSimMode');
+          btn.classList.add('off');
+          document.getElementById('simModeText').innerText = "OFF (Live)";
+        }
+      } catch (e) {
+        console.error("Storage / URL init error:", e);
+      }
+    }
+
+    function saveSettings() {
+      const val = document.getElementById('n8nWebhookInput').value.trim();
+      state.n8nWebhookUrl = val;
+      if (val) {
+        localStorage.setItem('fms_n8n_webhook', val);
+        pollLiveN8nWebhook();
+        if (state.simMode) toggleSimMode();
+      } else {
+        localStorage.removeItem('fms_n8n_webhook');
+      }
+      closeIntegrationModal();
+      showToast("Integration settings saved!");
+    }
+
     // Initial paint
     window.addEventListener('DOMContentLoaded', () => {
+      initUrlParamsAndStorage();
       resizeCanvas();
       updateDomMetrics();
+      updateUserUsage();
     });
   </script>
 </body>
