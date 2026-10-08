@@ -2521,7 +2521,7 @@ FileMaker.PerformScriptWithOption(
         const res = await fetch('https://fms.n8n.lexisolution.com/webhook/fms-logs');
         if (res.ok) {
           const data = await res.json();
-          let logsText = Array.isArray(data.logs) ? data.logs.join('\n') : data.logs;
+          let logsText = Array.isArray(data.logs) ? data.logs.map(l => typeof l === 'object' ? l.value : l).join('\n') : data.logs;
           document.getElementById('logsContainer').innerText = logsText || "No logs found.";
         } else {
           document.getElementById('logsContainer').innerText = "Failed to fetch logs. HTTP " + res.status;
