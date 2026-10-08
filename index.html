@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FMS OPS CENTER - Server Performance & Status Dashboard</title>
+  <title>MasterBOM Telemetry - Server Performance & Status Dashboard</title>
   <style>
     :root {
       --bg-base: #070b12;
@@ -1125,9 +1125,7 @@
           <div class="clock-sub">Last Sync: <span id="lastSyncTime">12:15:08</span></div>
         </div>
 
-        <button class="btn-action sim-toggle" id="btnSimMode" onclick="toggleSimMode()">
-          ▶ Sim Mode: <span id="simModeText">ON</span>
-        </button>
+        
 
         <div style="position: relative; display: inline-block;">
           <button class="btn-action" style="border-color: #f87171; color: #f87171;" onclick="toggleRestartMenu()" title="Restart Services">
@@ -1147,12 +1145,7 @@
           Sync
         </button>
 
-        <button class="btn-action" onclick="openIntegrationModal()" title="View FileMaker Script & n8n setup guide">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-        </button>
+        
 
         <button class="btn-action" onclick="toggleFullscreen()" title="Toggle Fullscreen">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2135,11 +2128,13 @@ FileMaker.PerformScriptWithOption(
         alertTitle.innerText = state.alert.title;
         alertDesc.innerHTML = state.alert.desc;
         btnAck.innerText = "ACKNOWLEDGE";
+        btnAck.onclick = acknowledgeAlert;
       } else {
         banner.classList.add('resolved');
-        alertTitle.innerHTML = `<span style="color:#34d399;">✓ SYSTEM ALL CLEAR: Optimal Latency &lt; 15 ms</span>`;
+        alertTitle.innerHTML = `<span style="color:#34d399;">✓ SYSTEM ALL CLEAR: Optimal Latency &lt; 20 ms</span>`;
         alertDesc.innerHTML = `All database engines and n8n pipelines operating within SLA parameters.`;
         btnAck.innerText = "VIEW LOGS";
+        btnAck.onclick = fetchAndShowLogs;
       }
 
       // Hosted Databases List
@@ -2283,6 +2278,9 @@ FileMaker.PerformScriptWithOption(
             state.metrics.remoteCalls = payload.metrics.remoteCalls !== undefined ? parseInt(payload.metrics.remoteCalls, 10) : state.metrics.remoteCalls;
             state.metrics.ioTime = payload.metrics.ioTime !== undefined ? parseFloat(payload.metrics.ioTime) : state.metrics.ioTime;
             state.metrics.ramUsed = payload.metrics.ramUsed !== undefined ? parseFloat(payload.metrics.ramUsed) : state.metrics.ramUsed;
+            state.metrics.ramTotal = payload.metrics.ramTotal !== undefined ? parseFloat(payload.metrics.ramTotal) : state.metrics.ramTotal;
+            state.metrics.diskUsed = payload.metrics.diskUsed !== undefined ? parseFloat(payload.metrics.diskUsed) : state.metrics.diskUsed;
+            state.metrics.diskTotal = payload.metrics.diskTotal !== undefined ? parseFloat(payload.metrics.diskTotal) : state.metrics.diskTotal;
             state.metrics.netIn = payload.metrics.netIn !== undefined ? parseFloat(payload.metrics.netIn) : state.metrics.netIn;
             state.metrics.netOut = payload.metrics.netOut !== undefined ? parseFloat(payload.metrics.netOut) : state.metrics.netOut;
             if (payload.metrics.breakdown) {
@@ -2533,6 +2531,29 @@ FileMaker.PerformScriptWithOption(
     }
 
     // Toast helper
+    
+    function closeLogsModal() {
+      document.getElementById('logsModal').classList.remove('active');
+    }
+
+    async function fetchAndShowLogs() {
+      document.getElementById('logsModal').classList.add('active');
+      document.getElementById('logsContainer').innerText = "Fetching logs securely via SSH...";
+      
+      try {
+        const res = await fetch('https://fms.n8n.lexisolution.com/webhook/fms-logs');
+        if (res.ok) {
+          const data = await res.json();
+          let logsText = Array.isArray(data.logs) ? data.logs.join('\n') : data.logs;
+          document.getElementById('logsContainer').innerText = logsText || "No logs found.";
+        } else {
+          document.getElementById('logsContainer').innerText = "Failed to fetch logs. HTTP " + res.status;
+        }
+      } catch (e) {
+        document.getElementById('logsContainer').innerText = "Error: " + e.message;
+      }
+    }
+
     function showToast(msg) {
       const t = document.getElementById('toastNotice');
       t.innerText = msg;
@@ -2635,5 +2656,18 @@ FileMaker.PerformScriptWithOption(
       updateUserUsage();
     });
   </script>
+
+  <div class="modal-overlay" id="logsModal">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="modal-header">
+        <h2>FileMaker Event.log (Last 30 lines)</h2>
+        <button class="modal-close" onclick="closeLogsModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <pre id="logsContainer" style="background: #111; color: #a3e635; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto; white-space: pre-wrap;">Fetching logs...</pre>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
