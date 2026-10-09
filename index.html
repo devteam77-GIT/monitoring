@@ -2096,7 +2096,7 @@ FileMaker.PerformScriptWithOption(
       document.getElementById('subDiskFree').innerText = `Free: ${(m.diskTotal - m.diskUsed).toFixed(2)} GB`;
 
       // Network
-      document.getElementById('valNetwork').innerText = m.netTotal.toFixed(1);
+      document.getElementById('valNetwork').innerText = ((m.netIn || 0) + (m.netOut || 0)).toFixed(1);
       document.getElementById('subNetIn').innerText = `In: ${m.netIn.toFixed(1)} MB/s`;
       document.getElementById('subNetOut').innerText = `Out: ${m.netOut.toFixed(1)} MB/s`;
 
@@ -2413,10 +2413,7 @@ FileMaker.PerformScriptWithOption(
           pill.className = "env-pill inactive";
         }
       });
-        document.getElementById('serverHostDisplay').innerText = "https://demo.fms-cluster.internal";
-      } else {
         document.getElementById('serverHostDisplay').innerText = state.serverHost;
-      }
       showToast(`Switched active environment to: ${envName}`);
       sendActionToFileMaker("SWITCH_ENVIRONMENT", { environment: envName });
     }
@@ -2462,10 +2459,6 @@ FileMaker.PerformScriptWithOption(
     }
 
     // Modal controls
-      navigator.clipboard.writeText(code).then(() => {
-        showToast("FileMaker script step copied to clipboard!");
-      });
-    }
 
     // Restart Services logic
     function toggleRestartMenu() {
