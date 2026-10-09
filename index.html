@@ -2057,7 +2057,7 @@ FileMaker.PerformScriptWithOption(
 
       // Active Sessions
       document.getElementById('valSessions').innerText = m.sessions;
-      document.getElementById('valSessionsMax').innerText = `/ ${m.sessionsMax}`;
+      document.getElementById('valSessionsMax').innerText = `/ 10`; m.sessionsMax = 10;
       
       const proPct = (m.breakdown.pro / m.sessionsMax) * 100;
       const webPct = (m.breakdown.web / m.sessionsMax) * 100;
@@ -2478,6 +2478,13 @@ FileMaker.PerformScriptWithOption(
     async function restartFMService(serviceName) {
       document.getElementById('restartMenu').style.display = 'none';
       if (!confirm(`Are you sure you want to hard-restart '${serviceName}'? This may briefly disrupt active operations.`)) return;
+
+      const pwd = prompt("Security Check:\nEnter the Admin Password to authorize restart:");
+      if (pwd !== "MasterBOM2026") {
+        alert("Unauthorized: Incorrect password.");
+        return;
+      }
+
       
       showToast(`Initiating restart for ${serviceName}...`);
       
