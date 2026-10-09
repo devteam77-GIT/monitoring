@@ -207,7 +207,7 @@
     function initGrid() {
       const grid = document.getElementById('fleetGrid');
       grid.innerHTML = servers.map(s => `
-        <div class="server-card" id="card-${s.id}" onclick="window.location.href='index.html?host=${s.host}'">
+        <div class="server-card" id="card-${s.id}" onclick="window.location.href=`${s.id}.html`">
           <div class="server-title">
             ${s.name}
             <span class="status-badge" id="status-${s.id}">CONNECTING...</span>
