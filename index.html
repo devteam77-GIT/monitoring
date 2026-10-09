@@ -2590,11 +2590,22 @@ FileMaker.PerformScriptWithOption(
         const hostParam = urlParams.get('host');
         const simParam = urlParams.get('sim');
 
+        if (hostParam) {
+          state.serverHost = hostParam;
+          document.getElementById('serverHostDisplay').innerText = hostParam;
+          
+          if (hostParam.includes('demo')) {
+            state.n8nWebhookUrl = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-dashboard';
+          } else if (hostParam.includes('kiekert')) {
+            state.n8nWebhookUrl = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-dashboard';
+          }
+        }
+
         const savedWebhook = localStorage.getItem('fms_n8n_webhook');
         if (webhookParam) {
           state.n8nWebhookUrl = webhookParam;
           localStorage.setItem('fms_n8n_webhook', webhookParam);
-        } else if (savedWebhook) {
+        } else if (savedWebhook && !hostParam) {
           state.n8nWebhookUrl = savedWebhook;
         }
 
@@ -2608,17 +2619,6 @@ FileMaker.PerformScriptWithOption(
         }
 
         
-        if (hostParam) {
-          state.serverHost = hostParam;
-          document.getElementById('serverHostDisplay').innerText = hostParam;
-          
-          if (hostParam.includes('demo')) {
-            state.n8nWebhookUrl = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-dashboard';
-          } else if (hostParam.includes('kiekert')) {
-            state.n8nWebhookUrl = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-dashboard';
-          }
-        }
-
 
         if (simParam === 'false' || simParam === 'off' || state.n8nWebhookUrl) {
           state.simMode = false;
