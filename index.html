@@ -2502,86 +2502,41 @@ FileMaker.PerformScriptWithOption(
       if (state.serverHost.includes('kiekert')) restartWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-restart';
       
       try {
-        const res = await fetch(restartWebhook, {
-
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ service: serviceName })
-        });
+        const cacheKey = 'fms_cache_live_' + state.serverHost;
+        const cacheTimeKey = 'fms_cache_time_live_' + state.serverHost;
+        const lastTime = localStorage.getItem(cacheTimeKey) || 0;
         
-        if (res.ok) {
-          const data = await res.json();
-          showToast(`Successfully executed restart command for ${serviceName}!`);
-          console.log("Restart output:", data);
+        let liveData;
+        let resStatus = 200;
+        let isOk = true;
+
+        if (Date.now() - lastTime < 20000) {
+           liveData = JSON.parse(localStorage.getItem(cacheKey));
         } else {
-          showToast(`Failed to restart ${serviceName}. HTTP ${res.status}`);
+           const res = await fetch(state.n8nWebhookUrl, {
+             method: 'GET',
+             headers: { 'Accept': 'application/json' }
+           });
+           resStatus = res.status;
+           isOk = res.ok;
+           if (res.ok) {
+              liveData = await res.json();
+              localStorage.setItem(cacheKey, JSON.stringify(liveData));
+              localStorage.setItem(cacheTimeKey, Date.now());
+           }
         }
-      } catch (err) {
-        showToast(`Network error triggering restart: ${err.message}`);
-      }
-    }
 
-    // Toast helper
-    
-    function closeLogsModal() {
-      document.getElementById('logsModal').classList.remove('active');
-    }
-
-    async function fetchAndShowLogs() {
-      document.getElementById('logsModal').classList.add('active');
-      document.getElementById('logsContainer').innerText = "Fetching logs securely via SSH...";
-      
-      
-      let logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-logs';
-      if (state.serverHost.includes('demo')) logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-logs';
-      if (state.serverHost.includes('kiekert')) logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-logs';
-      
-      try {
-        const res = await fetch(logWebhook);
-
-        if (res.ok) {
-          const data = await res.json();
-          let logsText = Array.isArray(data.logs) ? data.logs.map(l => typeof l === 'object' ? l.value : l).join('\n') : data.logs;
-          document.getElementById('logsContainer').innerText = logsText || "No logs found.";
-        } else {
-          document.getElementById('logsContainer').innerText = "Failed to fetch logs. HTTP " + res.status;
-        }
-      } catch (e) {
-        document.getElementById('logsContainer').innerText = "Error: " + e.message;
-      }
-    }
-
-    function showToast(msg) {
-      const t = document.getElementById('toastNotice');
-      t.innerText = msg;
-      t.classList.add('show');
-      setTimeout(() => {
-        t.classList.remove('show');
-      }, 2500);
-    }
-
-    /* ==========================================================================
-       7. REAL-TIME N8N WEBHOOK POLLING & URL PARAMS
-       ========================================================================== */
-    async function pollLiveN8nWebhook() {
-      if (!state.n8nWebhookUrl) return;
-      try {
-        const res = await fetch(state.n8nWebhookUrl, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-          const liveData = await res.json();
+        if (liveData) {
           window.setFMSData(liveData);
           if (state.simMode) {
             state.simMode = false;
             document.getElementById('btnSimMode').classList.add('off');
             document.getElementById('simModeText').innerText = "OFF (Live)";
           }
-          document.getElementById('bridgeStatus').innerText = "n8n Live Webhook 200 OK";
+          document.getElementById('bridgeStatus').innerText = "n8n Live Webhook " + resStatus + " OK";
           document.getElementById('bridgeStatus').style.color = "#34d399";
         } else {
-          document.getElementById('bridgeStatus').innerText = `n8n HTTP ${res.status}`;
+          document.getElementById('bridgeStatus').innerText = `n8n HTTP ${resStatus}`;
           document.getElementById('bridgeStatus').style.color = "#fbbf24";
         }
       } catch (err) {

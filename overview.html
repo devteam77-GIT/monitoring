@@ -242,10 +242,27 @@
 
     async function pollServer(server) {
       try {
-        const res = await fetch(server.webhook, { method: 'GET', headers: { 'Accept': 'application/json' } });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        const m = data.metrics || data;
+        const cacheKey = 'fms_cache_' + server.id;
+        const cacheTimeKey = 'fms_cache_time_' + server.id;
+        const lastTime = localStorage.getItem(cacheTimeKey) || 0;
+        
+        let data;
+        let m;
+        
+        // If data is less than 20 seconds old, use cache!
+        if (Date.now() - lastTime < 20000) {
+           data = JSON.parse(localStorage.getItem(cacheKey));
+           m = data.metrics || data;
+        } else {
+           const res = await fetch(server.webhook, { method: 'GET', headers: { 'Accept': 'application/json' } });
+           if (!res.ok) throw new Error("HTTP " + res.status);
+           data = await res.json();
+           m = data.metrics || data;
+           
+           // Save to cache for other tabs
+           localStorage.setItem(cacheKey, JSON.stringify(data));
+           localStorage.setItem(cacheTimeKey, Date.now());
+        }
 
         document.getElementById(`status-${server.id}`).innerText = "ONLINE";
         document.getElementById(`status-${server.id}`).className = "status-badge";
