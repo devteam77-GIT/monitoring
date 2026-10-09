@@ -2577,13 +2577,18 @@ FileMaker.PerformScriptWithOption(
         const cacheKey = 'fms_cache_live_' + state.serverHost;
         const cacheTimeKey = 'fms_cache_time_live_' + state.serverHost;
         const lastTime = localStorage.getItem(cacheTimeKey) || 0;
-        let liveData;
+        let liveData = null;
         let resStatus = 200;
         let isOk = true;
 
         if (Date.now() - lastTime < 20000) {
-           liveData = JSON.parse(localStorage.getItem(cacheKey));
-        } else {
+           try {
+             const cachedStr = localStorage.getItem(cacheKey);
+             if (cachedStr) liveData = JSON.parse(cachedStr);
+           } catch(e) { console.error(e); }
+        }
+        
+        if (!liveData) {
            const res = await fetch(state.n8nWebhookUrl, {
              method: 'GET',
              headers: { 'Accept': 'application/json' }
@@ -2595,6 +2600,7 @@ FileMaker.PerformScriptWithOption(
               localStorage.setItem(cacheKey, JSON.stringify(liveData));
               localStorage.setItem(cacheTimeKey, Date.now());
            }
+        }
         }
 
         if (liveData) {
@@ -2656,9 +2662,7 @@ FileMaker.PerformScriptWithOption(
 
         if (simParam === 'false' || simParam === 'off' || state.n8nWebhookUrl) {
           state.simMode = false;
-          const btn = document.getElementById('btnSimMode');
-          btn.classList.add('off');
-          document.getElementById('simModeText').innerText = "OFF (Live)";
+          const btn = document.getElementById('btnSimMode'); if(btn) btn.classList.add('off'); const txt = document.getElementById('simModeText'); if(txt) txt.innerText = "OFF (Live)";
         }
       } catch (e) {
         console.error("Storage / URL init error:", e);
