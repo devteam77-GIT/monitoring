@@ -2488,8 +2488,14 @@ FileMaker.PerformScriptWithOption(
       
       showToast(`Initiating restart for ${serviceName}...`);
       
+      
+      let restartWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-service-restart';
+      if (state.serverHost.includes('demo')) restartWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-restart';
+      if (state.serverHost.includes('kiekert')) restartWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-restart';
+      
       try {
-        const res = await fetch('https://fms.n8n.lexisolution.com/webhook/fms-service-restart', {
+        const res = await fetch(restartWebhook, {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ service: serviceName })
@@ -2517,8 +2523,14 @@ FileMaker.PerformScriptWithOption(
       document.getElementById('logsModal').classList.add('active');
       document.getElementById('logsContainer').innerText = "Fetching logs securely via SSH...";
       
+      
+      let logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-logs';
+      if (state.serverHost.includes('demo')) logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-logs';
+      if (state.serverHost.includes('kiekert')) logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-logs';
+      
       try {
-        const res = await fetch('https://fms.n8n.lexisolution.com/webhook/fms-logs');
+        const res = await fetch(logWebhook);
+
         if (res.ok) {
           const data = await res.json();
           let logsText = Array.isArray(data.logs) ? data.logs.map(l => typeof l === 'object' ? l.value : l).join('\n') : data.logs;
@@ -2595,10 +2607,18 @@ FileMaker.PerformScriptWithOption(
           setInterval(pollLiveN8nWebhook, 5000);
         }
 
+        
         if (hostParam) {
           state.serverHost = hostParam;
           document.getElementById('serverHostDisplay').innerText = hostParam;
+          
+          if (hostParam.includes('demo')) {
+            state.n8nWebhookUrl = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-dashboard';
+          } else if (hostParam.includes('kiekert')) {
+            state.n8nWebhookUrl = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-dashboard';
+          }
         }
+
 
         if (simParam === 'false' || simParam === 'off' || state.n8nWebhookUrl) {
           state.simMode = false;
