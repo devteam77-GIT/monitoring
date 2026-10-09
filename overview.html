@@ -137,9 +137,9 @@
 
   <script>
     const servers = [
-      { id: 'hitachi', name: 'Hitachi Prod', host: 'hitachi.master-bom.com', webhook: 'https://fms.n8n.lexisolution.com/webhook/fms-live-dashboard' },
-      { id: 'demo', name: 'Demo Env', host: 'demo.master-bom.com', webhook: 'https://fms.n8n.lexisolution.com/webhook/fms-demo-dashboard' },
-      { id: 'kiekert', name: 'Kiekert Prod', host: 'kiekert.master-bom.com', webhook: 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-dashboard' }
+      { id: 'hitachi', name: "Hitachi Server", host: 'hitachi.master-bom.com', webhook: 'https://fms.n8n.lexisolution.com/webhook/fms-live-dashboard' },
+      { id: 'demo', name: "Demo Server", host: 'demo.master-bom.com', webhook: 'https://fms.n8n.lexisolution.com/webhook/fms-demo-dashboard' },
+      { id: 'kiekert', name: "Kiekert Server", host: 'kiekert.master-bom.com', webhook: 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-dashboard' }
     ];
 
     function initGrid() {
@@ -211,7 +211,7 @@
 
     initGrid();
     pollAll();
-    setInterval(pollAll, 5000);
+    setInterval(pollAll, 30000);
   </script>
 </body>
 </html>
