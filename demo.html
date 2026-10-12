@@ -1224,7 +1224,10 @@
     </button>
 
         <div class="brand-title-wrap">
-          
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+            <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(100, 116, 139, 0.2); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.4);">PRIO 7</span>
+            <span style="font-weight: 700; font-size: 14px; color: #fff;">Demo Server</span>
+          </div>
           <div class="host-badge" id="hostBadge" title="Click to edit server host">
             <span class="status-dot" id="globalStatusDot"></span>
             <span id="serverHostDisplay">demo.master-bom.com</span>
@@ -1788,6 +1791,8 @@ FileMaker.PerformScriptWithOption(
       pollInterval: 3000,
       nextPollSec: 3,
       n8nWebhookUrl: 'https://fms.n8n.lexisolution.com/webhook/fms-demo-dashboard',
+      restartWebhookUrl: 'https://fms.n8n.lexisolution.com/webhook/fms-demo-restart',
+      logWebhookUrl: 'https://fms.n8n.lexisolution.com/webhook/fms-demo-logs',
       hasSpike: true,
       alert: {
         active: true,
@@ -2802,9 +2807,7 @@ FileMaker.PerformScriptWithOption(
       showToast(`Initiating restart for ${serviceName}...`);
       
       
-      let restartWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-service-restart';
-      if (state.serverHost.includes('demo')) restartWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-restart';
-      if (state.serverHost.includes('kiekert')) restartWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-restart';
+      let restartWebhook = state.restartWebhookUrl || 'https://fms.n8n.lexisolution.com/webhook/fms-demo-restart';
       
       try {
         const res = await fetch(restartWebhook, {
@@ -2837,9 +2840,7 @@ FileMaker.PerformScriptWithOption(
       document.getElementById('logsContainer').innerText = "Fetching logs securely via SSH...";
       
       
-      let logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-logs';
-      if (state.serverHost.includes('demo')) logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-demo-logs';
-      if (state.serverHost.includes('kiekert')) logWebhook = 'https://fms.n8n.lexisolution.com/webhook/fms-kiekert-logs';
+      let logWebhook = state.logWebhookUrl || 'https://fms.n8n.lexisolution.com/webhook/fms-demo-logs';
       
       try {
         const res = await fetch(logWebhook);
