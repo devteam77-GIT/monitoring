@@ -1062,6 +1062,138 @@
       transform: translateY(0);
       opacity: 1;
     }
+
+    /* USERS USAGE TABS & SYSTEM BADGES */
+    .client-tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-surface);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+    }
+    .client-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .client-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .client-tab-btn.active {
+      background: var(--bg-card);
+      color: #fff;
+      border: 1px solid var(--border-highlight);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    .tab-counter {
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+    }
+    .client-tab-btn.active .tab-counter {
+      background: var(--cyan-bright);
+      color: #070b12;
+      font-weight: 700;
+    }
+    .tab-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-int { background: #34d399; box-shadow: 0 0 6px #34d399; }
+    .dot-ext { background: #60a5fa; box-shadow: 0 0 6px #60a5fa; }
+
+    .sys-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .sys-badge.webdirect {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+    }
+    .sys-badge.pro {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #c084fc;
+    }
+    .sys-badge.go {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+    }
+    .sys-badge.api {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+    .sys-badge.server {
+      background: rgba(148, 163, 184, 0.15);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #94a3b8;
+    }
+    .net-pill {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-right: 6px;
+      letter-spacing: 0.5px;
+    }
+    .net-pill.internal {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .net-pill.external {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    .card-limit-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+      margin-left: auto;
+    }
+    .card-limit-tag.danger {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #f87171;
+      animation: pulse-red 1.5s infinite;
+    }
+    .alert-banner.limit-warning {
+      background: rgba(245, 158, 11, 0.15) !important;
+      border-color: rgba(245, 158, 11, 0.5) !important;
+    }
+    .alert-banner.limit-danger {
+      background: rgba(239, 68, 68, 0.18) !important;
+      border-color: rgba(239, 68, 68, 0.6) !important;
+    }
   </style>
 </head>
 <body>
@@ -1478,12 +1610,39 @@
     
     <!-- DETAILED CLIENT CONNECTIONS (ADDED PER REQUEST) -->
     <section class="panel-card" style="margin-bottom: 16px;">
-        <div class="panel-header">
-            <div class="panel-title-wrap">
-                <i class="fas fa-users" style="color: #38bdf8; font-size: 16px; margin-right: 8px;"></i>
-                <div class="panel-title">Active Client Connections</div>
+        <div class="panel-header" style="flex-direction: column; align-items: stretch; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div class="panel-title-wrap">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <div>
+                        <div class="panel-title" style="font-size: 15px;">Users Usage &amp; Active Client Connections</div>
+                        <div class="panel-subtitle" style="font-size: 12px; color: var(--text-muted);">Real-time connected sessions, network classification &amp; platform detection</div>
+                    </div>
+                </div>
+
+                <!-- TABS: All, Internal, External -->
+                <div class="client-tabs" id="clientTabs">
+                    <button class="client-tab-btn active" data-tab="all" onclick="setClientTab('all')">
+                        All Users <span class="tab-counter" id="tabCountAll">0</span>
+                    </button>
+                    <button class="client-tab-btn" data-tab="internal" onclick="setClientTab('internal')">
+                        <span class="tab-dot dot-int"></span> Internal (LAN/VPN) <span class="tab-counter" id="tabCountInt">0</span>
+                    </button>
+                    <button class="client-tab-btn" data-tab="external" onclick="setClientTab('external')">
+                        <span class="tab-dot dot-ext"></span> External (Remote) <span class="tab-counter" id="tabCountExt">0</span>
+                    </button>
+                </div>
             </div>
+
+            <!-- SUMMARY BREAKDOWN BAR -->
+            <div id="clientSummaryBar"></div>
         </div>
+
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; font-family: var(--font-mono);">
                 <thead>
@@ -1491,12 +1650,13 @@
                         <th style="padding: 10px 8px;">Session Identifier</th>
                         <th style="padding: 10px 8px;">Account Name</th>
                         <th style="padding: 10px 8px;">Database</th>
-                        <th style="padding: 10px 8px;">Host Name / IP</th>
-                        <th style="padding: 10px 8px;">Client</th>
+                        <th style="padding: 10px 8px;">Host / IP Address</th>
+                        <th style="padding: 10px 8px;">System / Platform</th>
+                        <th style="padding: 10px 8px;">Connect Time</th>
                     </tr>
                 </thead>
                 <tbody id="clientsTableBody">
-                    <tr><td colspan="5" style="padding: 16px; text-align: center; color: var(--text-dim);">Loading clients...</td></tr>
+                    <tr><td colspan="6" style="padding: 16px; text-align: center; color: var(--text-dim);">Loading clients...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -2034,6 +2194,135 @@ FileMaker.PerformScriptWithOption(
       renderSmallChart('userMemCanvas', state.userHistory.mem, 100);
     }
 
+    
+    let currentClientTab = 'all';
+
+    function setClientTab(tab) {
+      currentClientTab = tab;
+      document.querySelectorAll('.client-tab-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+      });
+      renderClientsTable();
+    }
+
+    function isInternalIP(ip) {
+      if (!ip) return false;
+      const clean = ip.trim();
+      if (clean === '127.0.0.1' || clean === '::1' || clean.toLowerCase() === 'localhost') return true;
+      if (clean.startsWith('10.')) return true;
+      if (clean.startsWith('192.168.')) return true;
+      if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(clean)) return true;
+      if (clean.endsWith('.internal') || clean.endsWith('.local') || clean.includes('lan')) return true;
+      return false;
+    }
+
+    function detectSystemPlatform(client) {
+      const type = ((client.clientType || '') + ' ' + (client.sessionIdentifier || '')).toUpperCase();
+      if (type.includes('WEBDIRECT') || type.includes('WEBD')) {
+        return { name: 'WebDirect (Browser)', css: 'webdirect', icon: '🌐' };
+      }
+      if (type.includes('PRO') || type.includes('FMPRO')) {
+        return { name: 'FileMaker Pro (Desktop)', css: 'pro', icon: '🖥️' };
+      }
+      if (type.includes('GO') || type.includes('FMGO') || type.includes('IOS')) {
+        return { name: 'FileMaker Go (iOS)', css: 'go', icon: '📱' };
+      }
+      if (type.includes('DATA API') || type.includes('REST') || type.includes('DAPI')) {
+        return { name: 'Data API (REST / Bot)', css: 'api', icon: '⚡' };
+      }
+      if (type.includes('XDBC') || type.includes('ODBC') || type.includes('JDBC')) {
+        return { name: 'ODBC / JDBC Driver', css: 'api', icon: '🔌' };
+      }
+      if (type.includes('SASE') || type.includes('SERVER') || type.includes('PSOS')) {
+        return { name: 'Server Script (PSoS)', css: 'server', icon: '⚙️' };
+      }
+      return { name: client.clientType || 'Desktop Client', css: 'pro', icon: '💻' };
+    }
+
+    function renderClientsTable() {
+      const tbody = document.getElementById('clientsTableBody');
+      if (!tbody) return;
+      const allClients = state.connectedUsersData || [];
+
+      let intCount = 0;
+      let extCount = 0;
+      let webCount = 0;
+      let proCount = 0;
+      let goCount = 0;
+      let apiCount = 0;
+
+      allClients.forEach(c => {
+        if (isInternalIP(c.ipAddress)) intCount++;
+        else extCount++;
+        const sys = detectSystemPlatform(c);
+        if (sys.css === 'webdirect') webCount++;
+        else if (sys.css === 'pro') proCount++;
+        else if (sys.css === 'go') goCount++;
+        else if (sys.css === 'api') apiCount++;
+      });
+
+      const tabAll = document.getElementById('tabCountAll');
+      const tabInt = document.getElementById('tabCountInt');
+      const tabExt = document.getElementById('tabCountExt');
+      if (tabAll) tabAll.innerText = allClients.length;
+      if (tabInt) tabInt.innerText = intCount;
+      if (tabExt) tabExt.innerText = extCount;
+
+      const summaryEl = document.getElementById('clientSummaryBar');
+      if (summaryEl) {
+        summaryEl.innerHTML = `
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--text-muted); padding: 8px 12px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid var(--border-subtle);">
+            <span>Total Connected: <strong style="color:#fff;">${allClients.length}</strong></span>
+            <span>&bull;</span>
+            <span>🏠 Internal (LAN/VPN): <strong style="color:#34d399;">${intCount}</strong></span>
+            <span>&bull;</span>
+            <span>🌍 External (Remote): <strong style="color:#60a5fa;">${extCount}</strong></span>
+            <span>&bull;</span>
+            <span>🌐 WebDirect: <strong style="color:#38bdf8;">${webCount}</strong></span>
+            <span>&bull;</span>
+            <span>🖥️ FileMaker Pro: <strong style="color:#c084fc;">${proCount}</strong></span>
+            <span>&bull;</span>
+            <span>📱 FileMaker Go: <strong style="color:#fbbf24;">${goCount}</strong></span>
+            ${apiCount > 0 ? `<span>&bull;</span><span>⚡ Data API: <strong style="color:#34d399;">${apiCount}</strong></span>` : ''}
+          </div>
+        `;
+      }
+
+      const filtered = allClients.filter(c => {
+        if (currentClientTab === 'internal') return isInternalIP(c.ipAddress);
+        if (currentClientTab === 'external') return !isInternalIP(c.ipAddress);
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        const emptyMsg = currentClientTab === 'internal'
+          ? 'No active internal (LAN / VPN) clients connected.'
+          : (currentClientTab === 'external' ? 'No active external (Remote / WAN) clients connected.' : 'No active clients connected.');
+        tbody.innerHTML = `<tr><td colspan="6" style="padding: 24px; text-align: center; color: var(--text-dim);">${emptyMsg}</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const isInt = isInternalIP(c.ipAddress);
+        const sys = detectSystemPlatform(c);
+        return `
+          <tr style="border-bottom: 1px solid var(--border-subtle); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding: 10px 8px; color: #fff; font-weight: 500;">${c.sessionIdentifier}</td>
+            <td style="padding: 10px 8px; color: var(--text-bright);">${c.accountName}</td>
+            <td style="padding: 10px 8px; color: var(--cyan-bright);">${c.database}</td>
+            <td style="padding: 10px 8px;">
+              <span class="net-pill ${isInt ? 'internal' : 'external'}">${isInt ? 'LAN' : 'WAN'}</span>
+              <span style="color: var(--text-muted);">${c.ipAddress}</span>
+            </td>
+            <td style="padding: 10px 8px;">
+              <span class="sys-badge ${sys.css}">${sys.icon} ${sys.name}</span>
+            </td>
+            <td style="padding: 10px 8px; color: var(--text-dim);">${c.connectTime ? c.connectTime.replace('T', ' ') : 'Active'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+  
     function updateDomMetrics() {
       const m = state.metrics;
 
@@ -2132,26 +2421,41 @@ FileMaker.PerformScriptWithOption(
       // Hosted Databases List
       renderDatabaseList();
 
-      // Clients List
-      if (state.connectedUsersData) {
-          const tbody = document.getElementById('clientsTableBody');
-          if (state.connectedUsersData.length === 0) {
-              tbody.innerHTML = '<tr><td colspan="5" style="padding: 16px; text-align: center; color: var(--text-dim);">No active clients connected.</td></tr>';
-          } else {
-              tbody.innerHTML = state.connectedUsersData.map(c => `
-                  <tr style="border-bottom: 1px solid var(--border-subtle); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                      <td style="padding: 10px 8px; color: #fff;">${c.sessionIdentifier}</td>
-                      <td style="padding: 10px 8px; color: var(--text-muted);">${c.accountName}</td>
-                      <td style="padding: 10px 8px; color: var(--cyan-bright);">${c.database}</td>
-                      <td style="padding: 10px 8px; color: var(--text-muted);">${c.ipAddress}</td>
-                      <td style="padding: 10px 8px;">
-                          <span style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                              ${c.clientType}
-                          </span>
-                      </td>
-                  </tr>
-              `).join('');
-          }
+      // Render Users Usage Table
+      renderClientsTable();
+
+      // Check Resource Limit Thresholds
+      const cpuVal = parseFloat(state.metrics.cpu || 0);
+      const ramVal = parseFloat(state.metrics.ramUsed || 0);
+      const ramMax = parseFloat(state.metrics.ramTotal || 64);
+      const ramCheckPct = ramMax > 0 ? (ramVal / ramMax) * 100 : 0;
+      const diskVal = parseFloat(state.metrics.diskUsed || 0);
+      const diskMax = parseFloat(state.metrics.diskTotal || 100);
+      const diskCheckPct = diskMax > 0 ? (diskVal / diskMax) * 100 : 0;
+      const sessVal = parseInt(state.metrics.sessions || 0, 10);
+      const sessMax = parseInt(state.metrics.sessionsMax || 100, 10);
+      const sessPct = sessMax > 0 ? (sessVal / sessMax) * 100 : 0;
+
+      const limitAlerts = [];
+      if (cpuVal >= 85) limitAlerts.push({ type: 'danger', msg: `CPU ${cpuVal}% Critical (> 85%)` });
+      else if (cpuVal >= 75) limitAlerts.push({ type: 'warning', msg: `CPU ${cpuVal}% High (Approaching 80% Limit)` });
+
+      if (ramCheckPct >= 88) limitAlerts.push({ type: 'danger', msg: `RAM ${ramCheckPct.toFixed(0)}% Critical (${ramVal}/${ramMax} GB)` });
+      else if (ramCheckPct >= 80) limitAlerts.push({ type: 'warning', msg: `RAM ${ramCheckPct.toFixed(0)}% High (${ramVal}/${ramMax} GB)` });
+
+      if (diskCheckPct >= 90) limitAlerts.push({ type: 'danger', msg: `Disk ${diskCheckPct.toFixed(0)}% Critical (${diskVal}/${diskMax} GB)` });
+      else if (diskCheckPct >= 82) limitAlerts.push({ type: 'warning', msg: `Disk ${diskCheckPct.toFixed(0)}% High (${diskVal}/${diskMax} GB)` });
+
+      if (sessPct >= 85) limitAlerts.push({ type: 'danger', msg: `Concurrent Sessions ${sessVal}/${sessMax}` });
+      else if (sessPct >= 75) limitAlerts.push({ type: 'warning', msg: `Concurrent Sessions ${sessVal}/${sessMax}` });
+
+      // Update Top Status Banner if resource limit is approaching
+      if (limitAlerts.length > 0 && !state.hasSpike) {
+        banner.classList.remove('resolved');
+        const isDanger = limitAlerts.some(a => a.type === 'danger');
+        banner.classList.add(isDanger ? 'limit-danger' : 'limit-warning');
+        alertTitle.innerHTML = `<span style="color:${isDanger ? '#f87171' : '#fbbf24'};">${isDanger ? '🚨 CRITICAL CAPACITY WARNING' : '⚠️ RESOURCE LIMIT WARNING'}</span>`;
+        alertDesc.innerHTML = limitAlerts.map(a => a.msg).join(' &bull; ');
       }
     }
 
@@ -2596,7 +2900,7 @@ FileMaker.PerformScriptWithOption(
               localStorage.setItem(cacheKey, JSON.stringify(liveData));
               localStorage.setItem(cacheTimeKey, Date.now().toString());
            } else {
-              localStorage.setItem(cacheTimeKey, "0");
+              localStorage.setItem(cacheTimeKey, (Date.now() - 15000).toString());
            }
         }
 
