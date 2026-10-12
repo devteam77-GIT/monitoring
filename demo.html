@@ -2872,39 +2872,23 @@ FileMaker.PerformScriptWithOption(
       if (!state.n8nWebhookUrl) return;
       try {
         const cacheKey = 'fms_cache_live_' + state.serverHost;
-        const cacheTimeKey = 'fms_cache_time_live_' + state.serverHost;
-        const lastTime = parseInt(localStorage.getItem(cacheTimeKey) || "0");
-        let liveData = null;
-        let resStatus = 200;
 
-        if (Date.now() - lastTime < 25000) {
-           try {
-             const cachedStr = localStorage.getItem(cacheKey);
-             if (cachedStr) {
-                 liveData = JSON.parse(cachedStr);
-             } else {
-                 return;
-             }
-           } catch(e) { console.error(e); }
-        }
-        
-        if (!liveData) {
-           localStorage.setItem(cacheTimeKey, Date.now().toString());
-           const res = await fetch(state.n8nWebhookUrl, {
-             method: 'GET',
-             headers: { 'Accept': 'application/json' }
-           });
-           resStatus = res.status;
-           if (res.ok) {
-              liveData = await res.json();
-              localStorage.setItem(cacheKey, JSON.stringify(liveData));
-              localStorage.setItem(cacheTimeKey, Date.now().toString());
-           } else {
-              localStorage.setItem(cacheTimeKey, (Date.now() - 15000).toString());
-           }
-        }
+        // Render from cache immediately if present
+        try {
+          const cachedStr = localStorage.getItem(cacheKey);
+          if (cachedStr) {
+            window.setFMSData(JSON.parse(cachedStr));
+          }
+        } catch(e) {}
 
-        if (liveData) {
+        const res = await fetch(state.n8nWebhookUrl + '?_t=' + Date.now(), {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        const resStatus = res.status;
+        if (res.ok) {
+          const liveData = await res.json();
+          localStorage.setItem(cacheKey, JSON.stringify(liveData));
           window.setFMSData(liveData);
           document.getElementById('bridgeStatus').innerText = "n8n Live Webhook 200 OK";
           document.getElementById('bridgeStatus').style.color = "#34d399";
@@ -2938,7 +2922,7 @@ FileMaker.PerformScriptWithOption(
       document.getElementById('n8nWebhookInput').value = state.n8nWebhookUrl;
       document.getElementById('bridgeStatus').innerText = "n8n Poller Active";
       pollLiveN8nWebhook();
-      setInterval(pollLiveN8nWebhook, 30000);
+      setInterval(pollLiveN8nWebhook, 15000);
       state.simMode = false;
       const btn = document.getElementById('btnSimMode');
       if (btn) btn.classList.add('off');

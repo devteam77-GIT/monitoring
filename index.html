@@ -337,109 +337,101 @@
       }
     }
 
+    function renderServerCard(server, data) {
+      if (!data) return;
+      const m = data.metrics || data;
+
+      document.getElementById(`status-${server.id}`).innerText = "ONLINE";
+      document.getElementById(`status-${server.id}`).className = "status-badge";
+      document.getElementById(`card-${server.id}`).classList.remove('offline');
+
+      const cpuNum = parseFloat(m.cpu || 0);
+      const ramUsedNum = parseFloat(m.ramUsed || 0);
+      const ramTotalNum = parseFloat(m.ramTotal || 64);
+      const ramPct = ramTotalNum > 0 ? (ramUsedNum / ramTotalNum) * 100 : 0;
+      const diskUsedNum = parseFloat(m.diskUsed || 0);
+      const diskTotalNum = parseFloat(m.diskTotal || 100);
+      const diskPct = diskTotalNum > 0 ? (diskUsedNum / diskTotalNum) * 100 : 0;
+      const sessNum = parseInt(m.sessions || 0, 10);
+      const sessMax = parseInt(m.sessionsMax || 100, 10);
+      const sessPct = sessMax > 0 ? (sessNum / sessMax) * 100 : 0;
+
+      document.getElementById(`cpu-${server.id}`).innerText = cpuNum.toFixed(1) + '%';
+      document.getElementById(`cpu-bar-${server.id}`).style.width = Math.min(100, cpuNum) + '%';
+
+      document.getElementById(`ram-${server.id}`).innerText = ramUsedNum.toFixed(1) + ' GB';
+      document.getElementById(`ram-bar-${server.id}`).style.width = Math.min(100, ramPct) + '%';
+
+      document.getElementById(`sess-${server.id}`).innerText = sessNum;
+      document.getElementById(`elap-${server.id}`).innerText = (m.elapsed || 0) + ' ms';
+
+      // Check resource limit thresholds
+      const sAlerts = [];
+      if (cpuNum >= 85) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'CPU ' + cpuNum + '% Critical' });
+      else if (cpuNum >= 75) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'CPU ' + cpuNum + '% High' });
+
+      if (ramPct >= 88) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'RAM ' + ramPct.toFixed(0) + '% Critical' });
+      else if (ramPct >= 80) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'RAM ' + ramPct.toFixed(0) + '% High' });
+
+      if (diskPct >= 90) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'Disk ' + diskPct.toFixed(0) + '% Critical' });
+      else if (diskPct >= 82) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'Disk ' + diskPct.toFixed(0) + '% High' });
+
+      if (sessPct >= 85) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'Sessions ' + sessNum + '/' + sessMax });
+      else if (sessPct >= 75) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'Sessions ' + sessNum + '/' + sessMax });
+
+      fleetAlerts[server.id] = sAlerts;
+      updateFleetBanner();
+
+      const card = document.getElementById(`card-${server.id}`);
+      const limitTag = document.getElementById(`limit-${server.id}`);
+      card.classList.remove('card-warning', 'card-danger');
+
+      if (sAlerts.length > 0) {
+        const topAlert = sAlerts[0];
+        card.classList.add(topAlert.type === 'danger' ? 'card-danger' : 'card-warning');
+        limitTag.innerHTML = `<span class="limit-badge ${topAlert.type}">⚠️ ${topAlert.msg}</span>`;
+      } else {
+        limitTag.innerHTML = '';
+      }
+
+      // Adjust bar colors dynamically based on limit
+      document.getElementById(`cpu-bar-${server.id}`).style.background = cpuNum >= 85 ? '#ef4444' : (cpuNum >= 75 ? '#f59e0b' : '#3b82f6');
+      document.getElementById(`ram-bar-${server.id}`).style.background = ramPct >= 88 ? '#ef4444' : (ramPct >= 80 ? '#f59e0b' : '#8b5cf6');
+
+      const sIndex = servers.findIndex(s => s.id === server.id);
+      updateChartData(sIndex, m.cpu, m.ramUsed);
+    }
+
     async function pollServer(server) {
       try {
         const cacheKey = 'fms_cache_live_' + server.host;
-        const cacheTimeKey = 'fms_cache_time_live_' + server.host;
-        const lastTime = parseInt(localStorage.getItem(cacheTimeKey) || "0");
         
-        let data = null;
-        let m = null;
+        // Show cached immediately if available
+        try {
+          const cachedStr = localStorage.getItem(cacheKey);
+          if (cachedStr) {
+            renderServerCard(server, JSON.parse(cachedStr));
+          }
+        } catch(e) {}
+
+        // Always fetch fresh real-time data from webhook
+        const res = await fetch(server.webhook + '?_t=' + Date.now(), {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
         
-        if (Date.now() - lastTime < 25000) {
-           try {
-               const cachedStr = localStorage.getItem(cacheKey);
-               if (cachedStr) {
-                   data = JSON.parse(cachedStr);
-                   m = data.metrics || data;
-               }
-           } catch(e) {}
-        }
-        
-        if (!data) {
-           localStorage.setItem(cacheTimeKey, Date.now().toString());
-           try {
-               const res = await fetch(server.webhook, { method: 'GET', headers: { 'Accept': 'application/json' } });
-               if (!res.ok) throw new Error("HTTP " + res.status);
-               
-               const textData = await res.text();
-               if (!textData) throw new Error("Empty body");
-               
-               data = JSON.parse(textData);
-               m = data.metrics || data;
-               
-               localStorage.setItem(cacheKey, JSON.stringify(data));
-               localStorage.setItem(cacheTimeKey, Date.now().toString());
-           } catch (err) {
-               localStorage.setItem(cacheTimeKey, (Date.now() - 15000).toString());
-               throw err;
-           }
-        }
-
-        document.getElementById(`status-${server.id}`).innerText = "ONLINE";
-        document.getElementById(`status-${server.id}`).className = "status-badge";
-        document.getElementById(`card-${server.id}`).classList.remove('offline');
-
-        const cpuNum = parseFloat(m.cpu || 0);
-        const ramUsedNum = parseFloat(m.ramUsed || 0);
-        const ramTotalNum = parseFloat(m.ramTotal || 64);
-        const ramPct = ramTotalNum > 0 ? (ramUsedNum / ramTotalNum) * 100 : 0;
-        const diskUsedNum = parseFloat(m.diskUsed || 0);
-        const diskTotalNum = parseFloat(m.diskTotal || 100);
-        const diskPct = diskTotalNum > 0 ? (diskUsedNum / diskTotalNum) * 100 : 0;
-        const sessNum = parseInt(m.sessions || 0, 10);
-        const sessMax = parseInt(m.sessionsMax || 100, 10);
-        const sessPct = sessMax > 0 ? (sessNum / sessMax) * 100 : 0;
-
-        document.getElementById(`cpu-${server.id}`).innerText = cpuNum.toFixed(1) + '%';
-        document.getElementById(`cpu-bar-${server.id}`).style.width = Math.min(100, cpuNum) + '%';
-
-        document.getElementById(`ram-${server.id}`).innerText = ramUsedNum.toFixed(1) + ' GB';
-        document.getElementById(`ram-bar-${server.id}`).style.width = Math.min(100, ramPct) + '%';
-
-        document.getElementById(`sess-${server.id}`).innerText = sessNum;
-        document.getElementById(`elap-${server.id}`).innerText = (m.elapsed || 0) + ' ms';
-
-        // Check resource limit thresholds
-        const sAlerts = [];
-        if (cpuNum >= 85) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'CPU ' + cpuNum + '% Critical' });
-        else if (cpuNum >= 75) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'CPU ' + cpuNum + '% High' });
-
-        if (ramPct >= 88) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'RAM ' + ramPct.toFixed(0) + '% Critical' });
-        else if (ramPct >= 80) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'RAM ' + ramPct.toFixed(0) + '% High' });
-
-        if (diskPct >= 90) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'Disk ' + diskPct.toFixed(0) + '% Critical' });
-        else if (diskPct >= 82) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'Disk ' + diskPct.toFixed(0) + '% High' });
-
-        if (sessPct >= 85) sAlerts.push({ type: 'danger', serverName: server.name, msg: 'Sessions ' + sessNum + '/' + sessMax });
-        else if (sessPct >= 75) sAlerts.push({ type: 'warning', serverName: server.name, msg: 'Sessions ' + sessNum + '/' + sessMax });
-
-        fleetAlerts[server.id] = sAlerts;
-        updateFleetBanner();
-
-        const card = document.getElementById(`card-${server.id}`);
-        const limitTag = document.getElementById(`limit-${server.id}`);
-        card.classList.remove('card-warning', 'card-danger');
-
-        if (sAlerts.length > 0) {
-          const topAlert = sAlerts[0];
-          card.classList.add(topAlert.type === 'danger' ? 'card-danger' : 'card-warning');
-          limitTag.innerHTML = `<span class="limit-badge ${topAlert.type}">⚠️ ${topAlert.msg}</span>`;
-        } else {
-          limitTag.innerHTML = '';
-        }
-
-        // Adjust bar colors dynamically based on limit
-        document.getElementById(`cpu-bar-${server.id}`).style.background = cpuNum >= 85 ? '#ef4444' : (cpuNum >= 75 ? '#f59e0b' : '#3b82f6');
-        document.getElementById(`ram-bar-${server.id}`).style.background = ramPct >= 88 ? '#ef4444' : (ramPct >= 80 ? '#f59e0b' : '#8b5cf6');
-
-        const sIndex = servers.findIndex(s => s.id === server.id);
-        updateChartData(sIndex, m.cpu, m.ramUsed);
-        
+        const data = await res.json();
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+        renderServerCard(server, data);
       } catch (err) {
-        document.getElementById(`status-${server.id}`).innerText = "OFFLINE";
-        document.getElementById(`status-${server.id}`).className = "status-badge offline";
-        document.getElementById(`card-${server.id}`).classList.add('offline');
+        console.warn("Poll error for " + server.name + ":", err);
+        const cardStatus = document.getElementById(`status-${server.id}`);
+        if (!cardStatus || cardStatus.innerText === "CONNECTING...") {
+          document.getElementById(`status-${server.id}`).innerText = "OFFLINE";
+          document.getElementById(`status-${server.id}`).className = "status-badge offline";
+          document.getElementById(`card-${server.id}`).classList.add('offline');
+        }
       }
     }
 
@@ -449,8 +441,16 @@
 
     initGrid();
     initChart();
+    // Preload cached cards immediately
+    servers.forEach(s => {
+      try {
+        const c = localStorage.getItem('fms_cache_live_' + s.host);
+        if (c) renderServerCard(s, JSON.parse(c));
+      } catch(e) {}
+    });
+    // Immediately fetch live data
     pollAll();
-    setInterval(pollAll, 30000);
+    setInterval(pollAll, 15000);
   </script>
 </body>
 </html>
