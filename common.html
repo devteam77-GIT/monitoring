@@ -2359,11 +2359,12 @@ FileMaker.PerformScriptWithOption(
 
       // Active Sessions
       document.getElementById('valSessions').innerText = m.sessions;
-      document.getElementById('valSessionsMax').innerText = `/ 10`; m.sessionsMax = 10;
+      const maxCap = parseInt(m.sessionsMax || 100, 10);
+      document.getElementById('valSessionsMax').innerText = `/ ${maxCap}`;
       
-      const proPct = (m.breakdown.pro / m.sessionsMax) * 100;
-      const webPct = (m.breakdown.web / m.sessionsMax) * 100;
-      const apiPct = (m.breakdown.api / m.sessionsMax) * 100;
+      const proPct = Math.min(100, (m.breakdown.pro / maxCap) * 100);
+      const webPct = Math.min(100, (m.breakdown.web / maxCap) * 100);
+      const apiPct = Math.min(100, (m.breakdown.api / maxCap) * 100);
       document.getElementById('segPro').style.width = `${proPct}%`;
       document.getElementById('segWeb').style.width = `${webPct}%`;
       document.getElementById('segApi').style.width = `${apiPct}%`;
@@ -2373,7 +2374,7 @@ FileMaker.PerformScriptWithOption(
 
       // CPU
       document.getElementById('valCpu').innerText = m.cpu.toFixed(1);
-      document.getElementById('fillCpu').style.width = `${m.cpu}%`;
+      document.getElementById('fillCpu').style.width = `${Math.min(100, m.cpu)}%`;
       const tagCpu = document.getElementById('tagCpu');
       if (m.cpu > 85) {
         tagCpu.className = 'metric-tag tag-danger';
@@ -2385,17 +2386,23 @@ FileMaker.PerformScriptWithOption(
 
       // RAM
       document.getElementById('valRam').innerText = m.ramUsed.toFixed(1);
-      const ramPct = ((m.ramUsed / m.ramTotal) * 100).toFixed(1);
+      const ramTotal = parseFloat(m.ramTotal) > 0 ? parseFloat(m.ramTotal) : 64.0;
+      const ramPct = Math.min(100, Math.max(0, (m.ramUsed / ramTotal) * 100)).toFixed(1);
       document.getElementById('fillRam').style.width = `${ramPct}%`;
       document.getElementById('tagRamPercent').innerText = `${ramPct}%`;
-      document.getElementById('subRamCapacity').innerText = `Capacity: ${m.ramTotal} GB`;
+      document.getElementById('subRamCapacity').innerText = `Capacity: ${ramTotal.toFixed(1)} GB`;
 
-      // Disk
-      document.getElementById('valDisk').innerText = m.diskUsed;
-      const diskPct = ((m.diskUsed / m.diskTotal) * 100).toFixed(1);
+      // Disk Storage (Safe handling against negative values)
+      let dTotal = parseFloat(m.diskTotal);
+      let dUsed = parseFloat(m.diskUsed);
+      if (isNaN(dTotal) || dTotal <= 0) dTotal = 259.9;
+      if (isNaN(dUsed) || dUsed < 0) dUsed = Math.max(0, dTotal - 68.87);
+      const dFree = Math.max(0, dTotal - dUsed);
+      const diskPct = Math.min(100, Math.max(0, (dUsed / dTotal) * 100)).toFixed(1);
+      document.getElementById('valDisk').innerText = dUsed.toFixed(1);
       document.getElementById('fillDisk').style.width = `${diskPct}%`;
       document.getElementById('tagDiskPercent').innerText = `${diskPct}%`;
-      document.getElementById('subDiskFree').innerText = `Free: ${(m.diskTotal - m.diskUsed).toFixed(2)} GB`;
+      document.getElementById('subDiskFree').innerText = `Free: ${dFree.toFixed(2)} GB`;
 
       // Network
       document.getElementById('valNetwork').innerText = ((m.netIn || 0) + (m.netOut || 0)).toFixed(1);

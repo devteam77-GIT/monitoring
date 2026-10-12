@@ -179,6 +179,270 @@
       border-color: rgba(239, 68, 68, 0.7) !important;
       box-shadow: 0 0 22px rgba(239, 68, 68, 0.22);
     }
+
+    /* Fleet Users Usage Panel */
+    .fleet-users-panel {
+      margin-top: 36px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .users-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .users-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .users-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+    .users-subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+    .client-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .client-tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .client-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .client-tab-btn.active {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #38bdf8;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .tab-counter {
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+    }
+    .client-tab-btn.active .tab-counter {
+      background: var(--cyan);
+      color: #070b12;
+      font-weight: 700;
+    }
+    .tab-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-int { background: #34d399; box-shadow: 0 0 6px #34d399; }
+    .dot-ext { background: #60a5fa; box-shadow: 0 0 6px #60a5fa; }
+
+    .users-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-select {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #e2e8f0;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--cyan);
+    }
+    .search-input {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #e2e8f0;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-family: inherit;
+      min-width: 200px;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--cyan);
+    }
+
+    .fleet-summary-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 11px;
+      color: #94a3b8;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .users-table-container {
+      overflow-x: auto;
+      max-height: 480px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0a0f1d;
+    }
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    .users-table th {
+      background: #0f172a;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .users-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+    }
+    .users-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .net-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 6px;
+      display: inline-block;
+    }
+    .net-pill.internal {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .net-pill.external {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .sys-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .sys-badge.webdirect {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+    }
+    .sys-badge.pro {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #c084fc;
+    }
+    .sys-badge.go {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+    }
+    .sys-badge.api {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+    .sys-badge.server {
+      background: rgba(148, 163, 184, 0.15);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #94a3b8;
+    }
+
+    .server-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid rgba(2, 132, 199, 0.35);
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .server-pill:hover {
+      background: rgba(2, 132, 199, 0.3);
+      color: #fff;
+    }
+
+    .chart-thresh-legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 11px;
+      color: #94a3b8;
+      flex-wrap: wrap;
+    }
+    .thresh-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .thresh-box {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -208,9 +472,111 @@
     <!-- Cards generated by JS -->
   </div>
 
-  <div style="margin-top: 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
-    <h2 style="font-size: 18px; margin-top: 0; margin-bottom: 20px; color: #94a3b8;">Fleet Resource Comparison (CPU & RAM)</h2>
-    <div style="height: 300px; width: 100%;">
+  <!-- FLEET CONNECTED USERS & SYSTEM USAGE OVERVIEW PANEL -->
+  <section class="fleet-users-panel">
+    <div class="users-header">
+      <div class="users-title-group">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <div>
+          <h2 class="users-title">Global Fleet Connected Users &amp; System Usage</h2>
+          <div class="users-subtitle">Real-time connected sessions across all 7 servers &bull; Classified by LAN/Internal &amp; Remote/External</div>
+        </div>
+      </div>
+
+      <div class="users-controls">
+        <!-- Client Tabs: All | Internal | External -->
+        <div class="client-tabs">
+          <button class="client-tab-btn active" data-tab="all" onclick="setFleetClientTab('all')">
+            <span>All Users</span>
+            <span class="tab-counter" id="tabCountAll">0</span>
+          </button>
+          <button class="client-tab-btn" data-tab="internal" onclick="setFleetClientTab('internal')">
+            <span class="tab-dot dot-int"></span>
+            <span>Internal (LAN/VPN)</span>
+            <span class="tab-counter" id="tabCountInt">0</span>
+          </button>
+          <button class="client-tab-btn" data-tab="external" onclick="setFleetClientTab('external')">
+            <span class="tab-dot dot-ext"></span>
+            <span>External (Remote)</span>
+            <span class="tab-counter" id="tabCountExt">0</span>
+          </button>
+        </div>
+
+        <!-- Filter by Server -->
+        <select class="filter-select" id="serverFilterSelect" onchange="onServerFilterChange(this.value)">
+          <option value="all">All Servers (7)</option>
+          <option value="common">Common Server</option>
+          <option value="malaysia">Malaysia Server</option>
+          <option value="motion">Motion Server</option>
+          <option value="volvo">Volvo Server</option>
+          <option value="hitachi">Hitachi Server</option>
+          <option value="kiekert">Kiekert Server</option>
+          <option value="demo">Demo Server</option>
+        </select>
+
+        <!-- Quick Search -->
+        <input type="text" class="search-input" id="userSearchInput" placeholder="🔍 Search user, db, IP..." oninput="onUserSearchInput(this.value)">
+      </div>
+    </div>
+
+    <!-- Summary KPI Bar -->
+    <div class="fleet-summary-bar" id="fleetClientSummaryBar">
+      <span>Total Connected: <strong style="color:#fff;" id="sumTotalUsers">0</strong></span>
+      <span>&bull;</span>
+      <span>🏠 Internal (LAN/VPN): <strong style="color:#34d399;" id="sumIntUsers">0</strong></span>
+      <span>&bull;</span>
+      <span>🌍 External (Remote WAN): <strong style="color:#60a5fa;" id="sumExtUsers">0</strong></span>
+      <span>&bull;</span>
+      <span>🌐 WebDirect: <strong style="color:#38bdf8;" id="sumWebUsers">0</strong></span>
+      <span>&bull;</span>
+      <span>🖥️ FileMaker Pro: <strong style="color:#c084fc;" id="sumProUsers">0</strong></span>
+      <span>&bull;</span>
+      <span>📱 FileMaker Go: <strong style="color:#fbbf24;" id="sumGoUsers">0</strong></span>
+      <span>&bull;</span>
+      <span>⚡ Data API: <strong style="color:#34d399;" id="sumApiUsers">0</strong></span>
+    </div>
+
+    <!-- Table -->
+    <div class="users-table-container">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Session Identifier</th>
+            <th>Account Name</th>
+            <th>Target Server</th>
+            <th>Database / System</th>
+            <th>Network / Host IP</th>
+            <th>Client Platform</th>
+            <th>Connect Time</th>
+          </tr>
+        </thead>
+        <tbody id="fleetUsersTableBody">
+          <tr><td colspan="7" style="padding: 24px; text-align: center; color: #64748b;">Loading live connected sessions across fleet...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FLEET RESOURCE COMPARISON CHART WITH DYNAMIC SPIKE COLORING -->
+  <div style="margin-top: 36px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h2 style="font-size: 18px; margin: 0; color: #fff;">Fleet Resource Comparison (CPU &amp; RAM)</h2>
+        <div style="font-size: 12px; color: #94a3b8; margin-top: 3px;">Real-time host capacity with automated spike detection threshold coloring</div>
+      </div>
+      <div class="chart-thresh-legend">
+        <div class="thresh-item"><span class="thresh-box" style="background: #10b981;"></span> <span>&lt; 40% Low / Normal</span></div>
+        <div class="thresh-item"><span class="thresh-box" style="background: #3b82f6;"></span> <span>40%–69% Moderate</span></div>
+        <div class="thresh-item"><span class="thresh-box" style="background: #f59e0b;"></span> <span>70%–84% Warning</span></div>
+        <div class="thresh-item"><span class="thresh-box" style="background: #ef4444;"></span> <span>&ge; 85% Usage Spike</span></div>
+      </div>
+    </div>
+    <div style="height: 320px; width: 100%;">
       <canvas id="fleetChart"></canvas>
     </div>
   </div>
@@ -218,6 +584,16 @@
   <script>
     
     let fleetChart;
+
+    function getMetricColor(value, maxVal = 100) {
+      const v = parseFloat(value) || 0;
+      const pct = maxVal > 0 ? (v / maxVal) * 100 : v;
+      if (pct >= 85) return '#ef4444'; // Red (Spike / Critical)
+      if (pct >= 70) return '#f59e0b'; // Amber (Elevated Warning)
+      if (pct >= 40) return '#3b82f6'; // Blue (Moderate Load)
+      return '#10b981'; // Green (Optimal / Low Usage)
+    }
+
     function initChart() {
       const ctx = document.getElementById('fleetChart').getContext('2d');
       fleetChart = new Chart(ctx, {
@@ -228,13 +604,13 @@
             {
               label: 'CPU Usage (%)',
               data: servers.map(() => 0),
-              backgroundColor: '#3b82f6',
+              backgroundColor: servers.map(() => '#10b981'),
               borderRadius: 4
             },
             {
               label: 'RAM Usage (GB)',
               data: servers.map(() => 0),
-              backgroundColor: '#8b5cf6',
+              backgroundColor: servers.map(() => '#10b981'),
               borderRadius: 4
             }
           ]
@@ -262,10 +638,18 @@
       });
     }
 
-    function updateChartData(serverIndex, cpu, ram) {
+    function updateChartData(serverIndex, cpu, ram, ramTotal) {
       if (fleetChart && serverIndex >= 0) {
-        fleetChart.data.datasets[0].data[serverIndex] = parseFloat(cpu) || 0;
-        fleetChart.data.datasets[1].data[serverIndex] = parseFloat(ram) || 0;
+        const cpuNum = parseFloat(cpu) || 0;
+        const ramNum = parseFloat(ram) || 0;
+        const ramMax = parseFloat(ramTotal) || 64;
+
+        fleetChart.data.datasets[0].data[serverIndex] = cpuNum;
+        fleetChart.data.datasets[0].backgroundColor[serverIndex] = getMetricColor(cpuNum, 100);
+
+        fleetChart.data.datasets[1].data[serverIndex] = ramNum;
+        fleetChart.data.datasets[1].backgroundColor[serverIndex] = getMetricColor(ramNum, ramMax);
+
         fleetChart.update();
       }
     }
@@ -403,7 +787,181 @@
       document.getElementById(`ram-bar-${server.id}`).style.background = ramPct >= 88 ? '#ef4444' : (ramPct >= 80 ? '#f59e0b' : '#8b5cf6');
 
       const sIndex = servers.findIndex(s => s.id === server.id);
-      updateChartData(sIndex, m.cpu, m.ramUsed);
+      updateChartData(sIndex, m.cpu, m.ramUsed, m.ramTotal);
+
+      // Collect connected users for fleet overview
+      if (data.connectedUsers && Array.isArray(data.connectedUsers)) {
+        serverClientsMap[server.id] = data.connectedUsers.map(c => ({
+          ...c,
+          serverId: server.id,
+          serverName: server.name,
+          serverHost: server.host
+        }));
+        renderFleetUsersTable();
+      }
+    }
+
+    /* ==========================================================================
+       FLEET USERS USAGE & SYSTEM DETECTION
+       ========================================================================== */
+    const serverClientsMap = {};
+    let currentFleetTab = 'all';
+    let currentServerFilter = 'all';
+    let currentSearchQuery = '';
+
+    function isInternalIP(ip) {
+      if (!ip) return false;
+      const clean = ip.trim();
+      if (clean === '127.0.0.1' || clean === '::1' || clean.toLowerCase() === 'localhost') return true;
+      if (clean.startsWith('10.')) return true;
+      if (clean.startsWith('192.168.')) return true;
+      if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(clean)) return true;
+      if (clean.endsWith('.internal') || clean.endsWith('.local') || clean.includes('lan')) return true;
+      return false;
+    }
+
+    function detectSystemPlatform(client) {
+      const type = ((client.clientType || '') + ' ' + (client.sessionIdentifier || '')).toUpperCase();
+      if (type.includes('WEBDIRECT') || type.includes('WEBD')) {
+        return { name: 'WebDirect (Browser)', css: 'webdirect', icon: '🌐' };
+      }
+      if (type.includes('PRO') || type.includes('FMPRO')) {
+        return { name: 'FileMaker Pro (Desktop)', css: 'pro', icon: '🖥️' };
+      }
+      if (type.includes('GO') || type.includes('FMGO') || type.includes('IOS')) {
+        return { name: 'FileMaker Go (iOS)', css: 'go', icon: '📱' };
+      }
+      if (type.includes('DATA API') || type.includes('REST') || type.includes('DAPI')) {
+        return { name: 'Data API (REST / Bot)', css: 'api', icon: '⚡' };
+      }
+      if (type.includes('XDBC') || type.includes('ODBC') || type.includes('JDBC')) {
+        return { name: 'ODBC / JDBC Driver', css: 'api', icon: '🔌' };
+      }
+      if (type.includes('SASE') || type.includes('SERVER') || type.includes('PSOS')) {
+        return { name: 'Server Script (PSoS)', css: 'server', icon: '⚙️' };
+      }
+      return { name: client.clientType || 'Desktop Client', css: 'pro', icon: '💻' };
+    }
+
+    function setFleetClientTab(tab) {
+      currentFleetTab = tab;
+      document.querySelectorAll('.client-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+      });
+      renderFleetUsersTable();
+    }
+
+    function onServerFilterChange(val) {
+      currentServerFilter = val;
+      renderFleetUsersTable();
+    }
+
+    function onUserSearchInput(val) {
+      currentSearchQuery = (val || '').toLowerCase().trim();
+      renderFleetUsersTable();
+    }
+
+    function renderFleetUsersTable() {
+      const tbody = document.getElementById('fleetUsersTableBody');
+      if (!tbody) return;
+
+      const allClients = Object.values(serverClientsMap).flat();
+
+      let intCount = 0;
+      let extCount = 0;
+      let webCount = 0;
+      let proCount = 0;
+      let goCount = 0;
+      let apiCount = 0;
+
+      allClients.forEach(c => {
+        if (isInternalIP(c.ipAddress)) intCount++;
+        else extCount++;
+        const sys = detectSystemPlatform(c);
+        if (sys.css === 'webdirect') webCount++;
+        else if (sys.css === 'pro') proCount++;
+        else if (sys.css === 'go') goCount++;
+        else if (sys.css === 'api') apiCount++;
+      });
+
+      // Update counters in tabs
+      const tabAll = document.getElementById('tabCountAll');
+      const tabInt = document.getElementById('tabCountInt');
+      const tabExt = document.getElementById('tabCountExt');
+      if (tabAll) tabAll.innerText = allClients.length;
+      if (tabInt) tabInt.innerText = intCount;
+      if (tabExt) tabExt.innerText = extCount;
+
+      // Update summary KPI bar
+      const sumTotal = document.getElementById('sumTotalUsers');
+      const sumInt = document.getElementById('sumIntUsers');
+      const sumExt = document.getElementById('sumExtUsers');
+      const sumWeb = document.getElementById('sumWebUsers');
+      const sumPro = document.getElementById('sumProUsers');
+      const sumGo = document.getElementById('sumGoUsers');
+      const sumApi = document.getElementById('sumApiUsers');
+
+      if (sumTotal) sumTotal.innerText = allClients.length;
+      if (sumInt) sumInt.innerText = intCount;
+      if (sumExt) sumExt.innerText = extCount;
+      if (sumWeb) sumWeb.innerText = webCount;
+      if (sumPro) sumPro.innerText = proCount;
+      if (sumGo) sumGo.innerText = goCount;
+      if (sumApi) sumApi.innerText = apiCount;
+
+      // Apply Filters
+      const filtered = allClients.filter(c => {
+        // Tab filter
+        if (currentFleetTab === 'internal' && !isInternalIP(c.ipAddress)) return false;
+        if (currentFleetTab === 'external' && isInternalIP(c.ipAddress)) return false;
+
+        // Server filter
+        if (currentServerFilter !== 'all' && c.serverId !== currentServerFilter) return false;
+
+        // Search query
+        if (currentSearchQuery) {
+          const matchTarget = `${c.sessionIdentifier || ''} ${c.accountName || ''} ${c.serverName || ''} ${c.database || ''} ${c.ipAddress || ''} ${c.clientType || ''}`.toLowerCase();
+          if (!matchTarget.includes(currentSearchQuery)) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        let msg = 'No active connected sessions found';
+        if (currentFleetTab === 'internal') msg = 'No active internal (LAN / VPN) clients connected';
+        else if (currentFleetTab === 'external') msg = 'No active external (Remote WAN) clients connected';
+        if (currentServerFilter !== 'all') msg += ` on ${currentServerFilter.toUpperCase()} server`;
+        tbody.innerHTML = `<tr><td colspan="7" style="padding: 24px; text-align: center; color: #64748b;">${msg}.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const isInt = isInternalIP(c.ipAddress);
+        const sys = detectSystemPlatform(c);
+        return `
+          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04); transition: background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+            <td style="padding: 10px 12px; color: #fff; font-weight: 600; font-family: monospace;">${c.sessionIdentifier || 'N/A'}</td>
+            <td style="padding: 10px 12px; color: #f1f5f9; font-weight: 500;">${c.accountName || 'Unknown'}</td>
+            <td style="padding: 10px 12px;">
+              <a href="${c.serverId}.html" class="server-pill" title="Click to view ${c.serverName} live dashboard">
+                🖥️ ${c.serverName}
+              </a>
+            </td>
+            <td style="padding: 10px 12px; color: var(--cyan); font-weight: 500;">${c.database || 'N/A'}</td>
+            <td style="padding: 10px 12px;">
+              <span class="net-pill ${isInt ? 'internal' : 'external'}">${isInt ? 'LAN' : 'WAN'}</span>
+              <span style="color: #94a3b8; font-family: monospace;">${c.ipAddress || 'Unknown'}</span>
+            </td>
+            <td style="padding: 10px 12px;">
+              <span class="sys-badge ${sys.css}">${sys.icon} ${sys.name}</span>
+            </td>
+            <td style="padding: 10px 12px; color: #64748b; font-family: monospace; font-size: 11px;">
+              ${c.connectTime ? c.connectTime.replace('T', ' ') : 'Active'}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function pollServer(server) {
