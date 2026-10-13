@@ -7,120 +7,244 @@
     :root {
       --bg: #0b1120;
       --card-bg: #111827;
-      --text: #e2e8f0;
+      --surface-bg: #0f172a;
+      --table-bg: #0a0f1d;
+      --text: #f8fafc;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
       --border: #1f2937;
+      --bar-track: #334155;
+      --row-hover: rgba(255, 255, 255, 0.03);
+      --row-border: rgba(255, 255, 255, 0.05);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       --cyan: #06b6d4;
       --green: #10b981;
       --red: #ef4444;
       --brand: #0284c7;
     }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --surface-bg: #f8fafc;
+      --table-bg: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #1e293b;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --border: #cbd5e1;
+      --bar-track: #e2e8f0;
+      --row-hover: rgba(2, 132, 199, 0.06);
+      --row-border: #e2e8f0;
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+      --cyan: #0891b2;
+      --green: #059669;
+      --red: #dc2626;
+      --brand: #0284c7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background-color: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      padding: 40px;
+      padding: 18px 28px;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
+
     header {
-      margin-bottom: 40px;
+      margin-bottom: 14px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 20px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 600;
+      padding-bottom: 12px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 12px;
     }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .kpi-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      box-shadow: var(--shadow);
+    }
+    .kpi-pill strong {
+      color: var(--text);
+    }
+
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow);
+    }
+    .header-btn:hover {
+      border-color: var(--brand);
+      transform: translateY(-1px);
+    }
+    .header-btn.active-toggle {
+      background: rgba(2, 132, 199, 0.15);
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+
+    /* 5-Column Smart TV Grid: Row 1 = 5 Servers, Row 2 = 2 Servers + 3-Col Chart */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
     }
+    @media (max-width: 1350px) {
+      .grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      .chart-grid-card {
+        grid-column: 1 / -1 !important;
+      }
+    }
+
     .server-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
+      padding: 16px 18px;
       cursor: pointer;
       transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .server-card:hover {
       border-color: var(--brand);
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
     .server-card.offline {
       border-color: var(--red);
     }
+
+    .chart-grid-card {
+      grid-column: span 3;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 195px;
+    }
+
     .server-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 6px;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 2px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      color: var(--text);
     }
     .server-host {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
     }
     .status-badge {
-      font-size: 11px;
-      padding: 4px 8px;
+      font-size: 10px;
+      padding: 3px 7px;
       border-radius: 4px;
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(16, 185, 129, 0.12);
       color: var(--green);
-      font-weight: bold;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      font-weight: 700;
+      border: 1px solid rgba(16, 185, 129, 0.25);
     }
     .status-badge.offline {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239, 68, 68, 0.12);
       color: var(--red);
-      border-color: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.25);
     }
     .metrics-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 10px 14px;
     }
     .m-label {
-      font-size: 11px;
+      font-size: 10px;
+      font-weight: 600;
       text-transform: uppercase;
-      color: #64748b;
-      margin-bottom: 4px;
+      color: var(--text-dim);
+      margin-bottom: 2px;
     }
     .m-value {
-      font-size: 24px;
-      font-weight: 500;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
     }
     .m-sub {
-      font-size: 12px;
-      color: #94a3b8;
+      font-size: 11px;
+      color: var(--text-muted);
     }
     .bar-bg {
-      height: 8px; /* Thicker bar */
-      background: #334155;
-      border-radius: 2px;
-      margin-top: 8px;
+      height: 6px;
+      background: var(--bar-track);
+      border-radius: 3px;
+      margin-top: 5px;
       overflow: hidden;
     }
     .bar-fill {
       height: 100%;
       background: var(--cyan);
-      border-radius: 2px;
+      border-radius: 3px;
       transition: width 0.5s ease;
     }
 
     .fleet-alert-banner {
-      margin-bottom: 24px;
-      padding: 14px 20px;
+      margin-bottom: 14px;
+      padding: 10px 16px;
       border-radius: 10px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -130,20 +254,26 @@
       transition: all 0.3s ease;
     }
     .fleet-alert-banner.healthy {
-      background: rgba(16, 185, 129, 0.08);
-      border-color: rgba(16, 185, 129, 0.25);
-      color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--green);
     }
     .fleet-alert-banner.warning {
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.4);
-      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #d97706;
       animation: alert-pulse 2s infinite ease-in-out;
+    }
+    :root .fleet-alert-banner.warning {
+      color: #fbbf24;
+    }
+    [data-theme="light"] .fleet-alert-banner.warning {
+      color: #b45309;
     }
     .fleet-alert-banner.danger {
       background: rgba(239, 68, 68, 0.15);
       border-color: rgba(239, 68, 68, 0.5);
-      color: #f87171;
+      color: var(--red);
       animation: alert-pulse 1.5s infinite ease-in-out;
     }
     @keyframes alert-pulse {
@@ -151,86 +281,84 @@
       50% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
     }
     .limit-badge {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 4px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      margin-left: 6px;
     }
     .limit-badge.warning {
       background: rgba(245, 158, 11, 0.2);
       border: 1px solid rgba(245, 158, 11, 0.4);
-      color: #fbbf24;
+      color: #f59e0b;
     }
     .limit-badge.danger {
       background: rgba(239, 68, 68, 0.2);
       border: 1px solid rgba(239, 68, 68, 0.5);
-      color: #f87171;
-      animation: pulse-red 1.5s infinite;
+      color: var(--red);
     }
     .server-card.card-warning {
-      border-color: rgba(245, 158, 11, 0.6) !important;
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.65) !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.12);
     }
     .server-card.card-danger {
-      border-color: rgba(239, 68, 68, 0.7) !important;
-      box-shadow: 0 0 22px rgba(239, 68, 68, 0.22);
+      border-color: rgba(239, 68, 68, 0.75) !important;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
     }
 
     /* Fleet Users Usage Panel */
     .fleet-users-panel {
-      margin-top: 36px;
+      margin-top: 16px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
     }
     .users-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 12px;
     }
     .users-title-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .users-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 8px;
       margin: 0;
     }
     .users-subtitle {
-      font-size: 12px;
-      color: #94a3b8;
-      margin-top: 3px;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
     .client-tabs {
       display: flex;
-      gap: 6px;
-      background: rgba(15, 23, 42, 0.85);
-      padding: 4px;
+      gap: 4px;
+      background: var(--surface-bg);
+      padding: 3px;
       border-radius: 8px;
       border: 1px solid var(--border);
     }
     .client-tab-btn {
       background: transparent;
-      border: none;
-      color: #94a3b8;
-      padding: 6px 14px;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 5px 11px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
@@ -239,25 +367,24 @@
       transition: all 0.2s ease;
     }
     .client-tab-btn:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
     }
     .client-tab-btn.active {
-      background: #1e293b;
-      color: #fff;
-      border: 1px solid #38bdf8;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      background: var(--card-bg);
+      color: var(--text);
+      border-color: var(--brand);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
     .tab-counter {
-      padding: 2px 7px;
+      padding: 1px 6px;
       border-radius: 10px;
       font-size: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #cbd5e1;
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text);
     }
     .client-tab-btn.active .tab-counter {
       background: var(--cyan);
-      color: #070b12;
+      color: #ffffff;
       font-weight: 700;
     }
     .tab-dot {
@@ -266,22 +393,22 @@
       border-radius: 50%;
       display: inline-block;
     }
-    .dot-int { background: #34d399; box-shadow: 0 0 6px #34d399; }
-    .dot-ext { background: #60a5fa; box-shadow: 0 0 6px #60a5fa; }
+    .dot-int { background: #10b981; box-shadow: 0 0 6px #10b981; }
+    .dot-ext { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
 
     .users-controls {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
     .filter-select {
-      background: #0f172a;
+      background: var(--surface-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      color: #e2e8f0;
-      padding: 7px 12px;
-      font-size: 12px;
+      color: var(--text);
+      padding: 6px 10px;
+      font-size: 11px;
       font-family: inherit;
     }
     .filter-select:focus {
@@ -289,14 +416,14 @@
       border-color: var(--cyan);
     }
     .search-input {
-      background: #0f172a;
+      background: var(--surface-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      color: #e2e8f0;
-      padding: 7px 12px;
-      font-size: 12px;
+      color: var(--text);
+      padding: 6px 10px;
+      font-size: 11px;
       font-family: inherit;
-      min-width: 200px;
+      min-width: 180px;
     }
     .search-input:focus {
       outline: none;
@@ -305,24 +432,25 @@
 
     .fleet-summary-bar {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
       align-items: center;
       font-size: 11px;
-      color: #94a3b8;
-      padding: 10px 14px;
-      background: rgba(15, 23, 42, 0.6);
+      color: var(--text-muted);
+      padding: 8px 12px;
+      background: var(--surface-bg);
       border-radius: 8px;
       border: 1px solid var(--border);
-      margin-bottom: 16px;
+      margin-bottom: 10px;
     }
 
     .users-table-container {
       overflow-x: auto;
-      max-height: 480px;
+      max-height: 310px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: #0a0f1d;
+      background: var(--table-bg);
+      scroll-behavior: smooth;
     }
     .users-table {
       width: 100%;
@@ -331,25 +459,25 @@
       text-align: left;
     }
     .users-table th {
-      background: #0f172a;
-      color: #64748b;
-      font-size: 11px;
+      background: var(--surface-bg);
+      color: var(--text-dim);
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 10px 12px;
+      padding: 8px 12px;
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 2;
     }
     .users-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: #e2e8f0;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--row-border);
+      color: var(--text-secondary);
     }
     .users-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--row-hover);
     }
 
     .net-pill {
@@ -362,12 +490,12 @@
     }
     .net-pill.internal {
       background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
+      color: var(--green);
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
     .net-pill.external {
       background: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
+      color: #3b82f6;
       border: 1px solid rgba(59, 130, 246, 0.3);
     }
 
@@ -375,72 +503,72 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 3px 8px;
+      padding: 2px 8px;
       border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
     }
     .sys-badge.webdirect {
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: #38bdf8;
+      background: rgba(2, 132, 199, 0.14);
+      border: 1px solid rgba(2, 132, 199, 0.35);
+      color: var(--brand);
     }
     .sys-badge.pro {
-      background: rgba(168, 85, 247, 0.15);
-      border: 1px solid rgba(168, 85, 247, 0.35);
-      color: #c084fc;
+      background: rgba(147, 51, 234, 0.14);
+      border: 1px solid rgba(147, 51, 234, 0.35);
+      color: #a855f7;
     }
     .sys-badge.go {
-      background: rgba(245, 158, 11, 0.15);
+      background: rgba(245, 158, 11, 0.14);
       border: 1px solid rgba(245, 158, 11, 0.35);
-      color: #fbbf24;
+      color: #f59e0b;
     }
     .sys-badge.api {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(16, 185, 129, 0.14);
       border: 1px solid rgba(16, 185, 129, 0.35);
-      color: #34d399;
+      color: var(--green);
     }
     .sys-badge.server {
-      background: rgba(148, 163, 184, 0.15);
+      background: rgba(148, 163, 184, 0.14);
       border: 1px solid rgba(148, 163, 184, 0.35);
-      color: #94a3b8;
+      color: var(--text-muted);
     }
 
     .server-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 3px 8px;
+      gap: 5px;
+      padding: 2px 8px;
       border-radius: 4px;
-      background: rgba(2, 132, 199, 0.15);
-      border: 1px solid rgba(2, 132, 199, 0.35);
-      color: #38bdf8;
+      background: rgba(2, 132, 199, 0.12);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      color: var(--brand);
       font-size: 11px;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.2s;
     }
     .server-pill:hover {
-      background: rgba(2, 132, 199, 0.3);
+      background: var(--brand);
       color: #fff;
     }
 
     .chart-thresh-legend {
       display: flex;
       align-items: center;
-      gap: 16px;
-      font-size: 11px;
-      color: #94a3b8;
+      gap: 10px;
+      font-size: 10px;
+      color: var(--text-muted);
       flex-wrap: wrap;
     }
     .thresh-item {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
     .thresh-box {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 2px;
     }
   </style>
@@ -450,7 +578,7 @@
 
   <header>
     <h1>
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
         <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
         <line x1="6" y1="6" x2="6.01" y2="6"></line>
@@ -458,25 +586,52 @@
       </svg>
       Global FMS Fleet Overview
     </h1>
+
+    <div class="header-actions">
+      <div class="kpi-pill" title="Online FileMaker Servers">
+        <span style="color: var(--green);">●</span>
+        <span>Servers: <strong id="hdrOnlineCount">7/7</strong></span>
+      </div>
+      <div class="kpi-pill" title="Total Active Client Sessions Across Fleet">
+        <span>👥 Sessions: <strong id="hdrTotalSessions">0</strong></span>
+      </div>
+      <div class="kpi-pill" title="Last Live Telemetry Poll">
+        <span>⏱️ Sync: <strong id="hdrLastSync">--:--:--</strong></span>
+      </div>
+
+      <button class="header-btn" id="btnAutoScroll" onclick="toggleUsersAutoScroll()" title="Auto-scroll user table for hands-free TV display">
+        <span>⇅ TV Auto-Scroll: <span id="autoScrollState">OFF</span></span>
+      </button>
+
+      <button class="header-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Switch between Light and Dark mode">
+        <span id="themeIcon">☀️</span>
+        <span id="themeLabel">Light Theme</span>
+      </button>
+
+      <button class="header-btn" onclick="toggleTVFullscreen()" title="Toggle Fullscreen for Wall TV Projection">
+        <span>⛶ TV Mode</span>
+      </button>
+    </div>
   </header>
 
   <div id="fleetAlertBanner" class="fleet-alert-banner healthy">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
       <span id="fleetAlertText">Checking fleet resource utilization...</span>
     </div>
-    <span id="fleetAlertSub" style="font-size: 11px; opacity: 0.8;">Threshold: 80% CPU / RAM / Disk / Sessions</span>
+    <span id="fleetAlertSub" style="font-size: 11px; opacity: 0.85;">Threshold: 80% CPU / RAM / Disk / Sessions</span>
   </div>
 
+  <!-- 5-COLUMN SMART GRID: 7 Server Cards + 3-Col Resource Comparison Chart in Row 2 -->
   <div class="grid" id="fleetGrid">
-    <!-- Cards generated by JS -->
+    <!-- Server Cards + Compact Resource Comparison Chart generated by JS -->
   </div>
 
   <!-- FLEET CONNECTED USERS & SYSTEM USAGE OVERVIEW PANEL -->
   <section class="fleet-users-panel">
     <div class="users-header">
       <div class="users-title-group">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
           <circle cx="9" cy="7" r="4"></circle>
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -526,23 +681,23 @@
 
     <!-- Summary KPI Bar -->
     <div class="fleet-summary-bar" id="fleetClientSummaryBar">
-      <span>Total Connected: <strong style="color:#fff;" id="sumTotalUsers">0</strong></span>
+      <span>Total Connected: <strong style="color:var(--text);" id="sumTotalUsers">0</strong></span>
       <span>&bull;</span>
-      <span>🏠 Internal (LAN/VPN): <strong style="color:#34d399;" id="sumIntUsers">0</strong></span>
+      <span>🏠 Internal (LAN/VPN): <strong style="color:var(--green);" id="sumIntUsers">0</strong></span>
       <span>&bull;</span>
-      <span>🌍 External (Remote WAN): <strong style="color:#60a5fa;" id="sumExtUsers">0</strong></span>
+      <span>🌍 External (Remote WAN): <strong style="color:#3b82f6;" id="sumExtUsers">0</strong></span>
       <span>&bull;</span>
-      <span>🌐 WebDirect: <strong style="color:#38bdf8;" id="sumWebUsers">0</strong></span>
+      <span>🌐 WebDirect: <strong style="color:var(--brand);" id="sumWebUsers">0</strong></span>
       <span>&bull;</span>
-      <span>🖥️ FileMaker Pro: <strong style="color:#c084fc;" id="sumProUsers">0</strong></span>
+      <span>🖥️ FileMaker Pro: <strong style="color:#a855f7;" id="sumProUsers">0</strong></span>
       <span>&bull;</span>
-      <span>📱 FileMaker Go: <strong style="color:#fbbf24;" id="sumGoUsers">0</strong></span>
+      <span>📱 FileMaker Go: <strong style="color:#f59e0b;" id="sumGoUsers">0</strong></span>
       <span>&bull;</span>
-      <span>⚡ Data API: <strong style="color:#34d399;" id="sumApiUsers">0</strong></span>
+      <span>⚡ Data API: <strong style="color:var(--green);" id="sumApiUsers">0</strong></span>
     </div>
 
     <!-- Table -->
-    <div class="users-table-container">
+    <div class="users-table-container" id="usersTableContainer">
       <table class="users-table">
         <thead>
           <tr>
@@ -556,34 +711,76 @@
           </tr>
         </thead>
         <tbody id="fleetUsersTableBody">
-          <tr><td colspan="7" style="padding: 24px; text-align: center; color: #64748b;">Loading live connected sessions across fleet...</td></tr>
+          <tr><td colspan="7" style="padding: 24px; text-align: center; color: var(--text-dim);">Loading live connected sessions across fleet...</td></tr>
         </tbody>
       </table>
     </div>
   </section>
-
-  <!-- FLEET RESOURCE COMPARISON CHART WITH DYNAMIC SPIKE COLORING -->
-  <div style="margin-top: 36px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-      <div>
-        <h2 style="font-size: 18px; margin: 0; color: #fff;">Fleet Resource Comparison (CPU &amp; RAM)</h2>
-        <div style="font-size: 12px; color: #94a3b8; margin-top: 3px;">Real-time host capacity with automated spike detection threshold coloring</div>
-      </div>
-      <div class="chart-thresh-legend">
-        <div class="thresh-item"><span class="thresh-box" style="background: #10b981;"></span> <span>&lt; 40% Low / Normal</span></div>
-        <div class="thresh-item"><span class="thresh-box" style="background: #3b82f6;"></span> <span>40%–69% Moderate</span></div>
-        <div class="thresh-item"><span class="thresh-box" style="background: #f59e0b;"></span> <span>70%–84% Warning</span></div>
-        <div class="thresh-item"><span class="thresh-box" style="background: #ef4444;"></span> <span>&ge; 85% Usage Spike</span></div>
-      </div>
-    </div>
-    <div style="height: 320px; width: 100%;">
-      <canvas id="fleetChart"></canvas>
-    </div>
-  </div>
   
   <script>
     
     let fleetChart;
+    let currentTheme = localStorage.getItem('fms_fleet_theme') || 'dark';
+
+    function applyTheme(theme) {
+      currentTheme = theme;
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.getElementById('themeIcon').innerText = '🌙';
+        document.getElementById('themeLabel').innerText = 'Dark Theme';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        document.getElementById('themeIcon').innerText = '☀️';
+        document.getElementById('themeLabel').innerText = 'Light Theme';
+      }
+      if (fleetChart) {
+        const isLight = theme === 'light';
+        fleetChart.options.scales.y.grid.color = isLight ? '#e2e8f0' : '#1f2937';
+        fleetChart.options.scales.y.ticks.color = isLight ? '#475569' : '#94a3b8';
+        fleetChart.options.scales.x.ticks.color = isLight ? '#334155' : '#94a3b8';
+        fleetChart.options.plugins.legend.labels.color = isLight ? '#0f172a' : '#e2e8f0';
+        fleetChart.update();
+      }
+    }
+
+    function toggleTheme() {
+      const next = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('fms_fleet_theme', next);
+      applyTheme(next);
+    }
+
+    function toggleTVFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+
+    let autoScrollInterval = null;
+    let autoScrollDir = 1;
+    function toggleUsersAutoScroll() {
+      const btn = document.getElementById('btnAutoScroll');
+      const stateEl = document.getElementById('autoScrollState');
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+        btn.classList.remove('active-toggle');
+        stateEl.innerText = 'OFF';
+      } else {
+        btn.classList.add('active-toggle');
+        stateEl.innerText = 'ON';
+        autoScrollInterval = setInterval(() => {
+          const container = document.getElementById('usersTableContainer');
+          if (!container) return;
+          const maxScroll = container.scrollHeight - container.clientHeight;
+          if (maxScroll <= 0) return;
+          container.scrollTop += autoScrollDir * 1.5;
+          if (container.scrollTop >= maxScroll) autoScrollDir = -1;
+          else if (container.scrollTop <= 0) autoScrollDir = 1;
+        }, 40);
+      }
+    }
 
     function getMetricColor(value, maxVal = 100) {
       const v = parseFloat(value) || 0;
@@ -595,23 +792,30 @@
     }
 
     function initChart() {
-      const ctx = document.getElementById('fleetChart').getContext('2d');
+      const canvas = document.getElementById('fleetChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const isLight = currentTheme === 'light';
       fleetChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: servers.map(s => s.name),
+          labels: servers.map(s => s.name.replace(' Server', '')),
           datasets: [
             {
               label: 'CPU Usage (%)',
               data: servers.map(() => 0),
               backgroundColor: servers.map(() => '#10b981'),
-              borderRadius: 4
+              borderRadius: 4,
+              barPercentage: 0.72,
+              categoryPercentage: 0.75
             },
             {
               label: 'RAM Usage (GB)',
               data: servers.map(() => 0),
               backgroundColor: servers.map(() => '#10b981'),
-              borderRadius: 4
+              borderRadius: 4,
+              barPercentage: 0.72,
+              categoryPercentage: 0.75
             }
           ]
         },
@@ -621,17 +825,19 @@
           scales: {
             y: {
               beginAtZero: true,
-              grid: { color: '#1f2937' },
-              ticks: { color: '#94a3b8' }
+              grid: { color: isLight ? '#e2e8f0' : '#1f2937' },
+              ticks: { color: isLight ? '#475569' : '#94a3b8', font: { size: 10 } }
             },
             x: {
               grid: { display: false },
-              ticks: { color: '#94a3b8' }
+              ticks: { color: isLight ? '#334155' : '#94a3b8', font: { size: 11, weight: '600' } }
             }
           },
           plugins: {
             legend: {
-              labels: { color: '#e2e8f0' }
+              position: 'top',
+              align: 'end',
+              labels: { color: isLight ? '#0f172a' : '#e2e8f0', boxWidth: 10, font: { size: 11 } }
             }
           }
         }
@@ -666,16 +872,18 @@
 
     function initGrid() {
       const grid = document.getElementById('fleetGrid');
-      grid.innerHTML = servers.map(s => `
+      const cardsHtml = servers.map(s => `
         <div class="server-card" id="card-${s.id}" onclick="window.location.href='${s.id}.html'">
-          <div class="server-title">
-            ${s.name}
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span id="limit-${s.id}"></span>
-              <span class="status-badge" id="status-${s.id}">CONNECTING...</span>
+          <div>
+            <div class="server-title">
+              <span>${s.name}</span>
+              <div style="display: flex; align-items: center; gap: 5px;">
+                <span id="limit-${s.id}"></span>
+                <span class="status-badge" id="status-${s.id}">CONNECTING...</span>
+              </div>
             </div>
+            <div class="server-host">${s.host}</div>
           </div>
-          <div class="server-host">${s.host}</div>
           
           <div class="metrics-grid">
             <div>
@@ -701,9 +909,44 @@
           </div>
         </div>
       `).join('');
+
+      const chartCardHtml = `
+        <div class="chart-grid-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+            <div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text);">Fleet Resource Comparison (CPU &amp; RAM)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Live host utilization &amp; spike threshold coloring</div>
+            </div>
+            <div class="chart-thresh-legend">
+              <div class="thresh-item"><span class="thresh-box" style="background: #10b981;"></span> <span>&lt;40% Normal</span></div>
+              <div class="thresh-item"><span class="thresh-box" style="background: #3b82f6;"></span> <span>40–69% Mod</span></div>
+              <div class="thresh-item"><span class="thresh-box" style="background: #f59e0b;"></span> <span>70–84% Warn</span></div>
+              <div class="thresh-item"><span class="thresh-box" style="background: #ef4444;"></span> <span>&ge;85% Spike</span></div>
+            </div>
+          </div>
+          <div style="flex: 1; min-height: 145px; width: 100%; position: relative;">
+            <canvas id="fleetChart"></canvas>
+          </div>
+        </div>
+      `;
+
+      grid.innerHTML = cardsHtml + chartCardHtml;
     }
 
     const fleetAlerts = {};
+    const serverStatusMap = {};
+    const serverSessionsCountMap = {};
+
+    function updateHeaderKPIs() {
+      const onlineCount = Object.values(serverStatusMap).filter(Boolean).length;
+      const totalSess = Object.values(serverSessionsCountMap).reduce((a, b) => a + b, 0);
+      const onlineEl = document.getElementById('hdrOnlineCount');
+      const sessEl = document.getElementById('hdrTotalSessions');
+      const syncEl = document.getElementById('hdrLastSync');
+      if (onlineEl) onlineEl.innerText = `${onlineCount || servers.length}/${servers.length}`;
+      if (sessEl) sessEl.innerText = totalSess;
+      if (syncEl) syncEl.innerText = new Date().toTimeString().split(' ')[0];
+    }
 
     function updateFleetBanner() {
       const banner = document.getElementById('fleetAlertBanner');
@@ -714,7 +957,7 @@
       const activeAlerts = Object.values(fleetAlerts).flat();
       if (activeAlerts.length === 0) {
         banner.className = 'fleet-alert-banner healthy';
-        text.innerHTML = '<span style="color:#34d399;">● ALL SYSTEMS CLEAR:</span> All monitored servers operating well within safe capacity thresholds.';
+        text.innerHTML = '<span>● ALL SYSTEMS CLEAR:</span> All monitored servers operating well within safe capacity thresholds.';
         sub.innerText = 'Safe Thresholds: < 80% CPU, < 80% RAM, < 85% Disk, < 80% Sessions';
       } else {
         const hasDanger = activeAlerts.some(a => a.type === 'danger');
@@ -732,17 +975,21 @@
       document.getElementById(`status-${server.id}`).innerText = "ONLINE";
       document.getElementById(`status-${server.id}`).className = "status-badge";
       document.getElementById(`card-${server.id}`).classList.remove('offline');
+      serverStatusMap[server.id] = true;
 
       const cpuNum = parseFloat(m.cpu || 0);
       const ramUsedNum = parseFloat(m.ramUsed || 0);
       const ramTotalNum = parseFloat(m.ramTotal || 64);
       const ramPct = ramTotalNum > 0 ? (ramUsedNum / ramTotalNum) * 100 : 0;
-      const diskUsedNum = parseFloat(m.diskUsed || 0);
+      const diskUsedNum = Math.max(0, parseFloat(m.diskUsed || 0));
       const diskTotalNum = parseFloat(m.diskTotal || 100);
       const diskPct = diskTotalNum > 0 ? (diskUsedNum / diskTotalNum) * 100 : 0;
       const sessNum = parseInt(m.sessions || 0, 10);
       const sessMax = parseInt(m.sessionsMax || 100, 10);
       const sessPct = sessMax > 0 ? (sessNum / sessMax) * 100 : 0;
+
+      serverSessionsCountMap[server.id] = sessNum;
+      updateHeaderKPIs();
 
       document.getElementById(`cpu-${server.id}`).innerText = cpuNum.toFixed(1) + '%';
       document.getElementById(`cpu-bar-${server.id}`).style.width = Math.min(100, cpuNum) + '%';
@@ -911,19 +1158,13 @@
 
       // Apply Filters
       const filtered = allClients.filter(c => {
-        // Tab filter
         if (currentFleetTab === 'internal' && !isInternalIP(c.ipAddress)) return false;
         if (currentFleetTab === 'external' && isInternalIP(c.ipAddress)) return false;
-
-        // Server filter
         if (currentServerFilter !== 'all' && c.serverId !== currentServerFilter) return false;
-
-        // Search query
         if (currentSearchQuery) {
           const matchTarget = `${c.sessionIdentifier || ''} ${c.accountName || ''} ${c.serverName || ''} ${c.database || ''} ${c.ipAddress || ''} ${c.clientType || ''}`.toLowerCase();
           if (!matchTarget.includes(currentSearchQuery)) return false;
         }
-
         return true;
       });
 
@@ -932,7 +1173,7 @@
         if (currentFleetTab === 'internal') msg = 'No active internal (LAN / VPN) clients connected';
         else if (currentFleetTab === 'external') msg = 'No active external (Remote WAN) clients connected';
         if (currentServerFilter !== 'all') msg += ` on ${currentServerFilter.toUpperCase()} server`;
-        tbody.innerHTML = `<tr><td colspan="7" style="padding: 24px; text-align: center; color: #64748b;">${msg}.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--text-dim);">${msg}.</td></tr>`;
         return;
       }
 
@@ -940,23 +1181,23 @@
         const isInt = isInternalIP(c.ipAddress);
         const sys = detectSystemPlatform(c);
         return `
-          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04); transition: background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
-            <td style="padding: 10px 12px; color: #fff; font-weight: 600; font-family: monospace;">${c.sessionIdentifier || 'N/A'}</td>
-            <td style="padding: 10px 12px; color: #f1f5f9; font-weight: 500;">${c.accountName || 'Unknown'}</td>
-            <td style="padding: 10px 12px;">
+          <tr>
+            <td style="font-weight: 600; font-family: monospace; color: var(--text);">${c.sessionIdentifier || 'N/A'}</td>
+            <td style="font-weight: 600; color: var(--text-secondary);">${c.accountName || 'Unknown'}</td>
+            <td>
               <a href="${c.serverId}.html" class="server-pill" title="Click to view ${c.serverName} live dashboard">
                 🖥️ ${c.serverName}
               </a>
             </td>
-            <td style="padding: 10px 12px; color: var(--cyan); font-weight: 500;">${c.database || 'N/A'}</td>
-            <td style="padding: 10px 12px;">
+            <td style="color: var(--cyan); font-weight: 600;">${c.database || 'N/A'}</td>
+            <td>
               <span class="net-pill ${isInt ? 'internal' : 'external'}">${isInt ? 'LAN' : 'WAN'}</span>
-              <span style="color: #94a3b8; font-family: monospace;">${c.ipAddress || 'Unknown'}</span>
+              <span style="color: var(--text-muted); font-family: monospace;">${c.ipAddress || 'Unknown'}</span>
             </td>
-            <td style="padding: 10px 12px;">
+            <td>
               <span class="sys-badge ${sys.css}">${sys.icon} ${sys.name}</span>
             </td>
-            <td style="padding: 10px 12px; color: #64748b; font-family: monospace; font-size: 11px;">
+            <td style="color: var(--text-dim); font-family: monospace; font-size: 11px;">
               ${c.connectTime ? c.connectTime.replace('T', ' ') : 'Active'}
             </td>
           </tr>
@@ -993,6 +1234,8 @@
           document.getElementById(`status-${server.id}`).innerText = "OFFLINE";
           document.getElementById(`status-${server.id}`).className = "status-badge offline";
           document.getElementById(`card-${server.id}`).classList.add('offline');
+          serverStatusMap[server.id] = false;
+          updateHeaderKPIs();
         }
       }
     }
@@ -1002,6 +1245,7 @@
     }
 
     initGrid();
+    applyTheme(currentTheme);
     initChart();
     // Preload cached cards immediately
     servers.forEach(s => {
