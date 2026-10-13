@@ -1518,7 +1518,7 @@
           </div>
         </div>
       </div>
-      <button class="btn-ack" id="btnAcknowledge" onclick="acknowledgeAlert()">ACKNOWLEDGE</button>
+      <button class="btn-ack" id="btnAcknowledge" onclick="acknowledgeAlert()" style="display: none;">ACKNOWLEDGE</button>
     </section>
 
     <!-- METRICS GRID (8 KEY METRICS) -->
@@ -3018,14 +3018,14 @@ FileMaker.PerformScriptWithOption(
         banner.classList.remove('resolved');
         alertTitle.innerText = state.alert.title;
         alertDesc.innerHTML = state.alert.desc;
+        btnAck.style.display = "inline-block";
         btnAck.innerText = "ACKNOWLEDGE";
         btnAck.onclick = acknowledgeAlert;
       } else {
         banner.classList.add('resolved');
         alertTitle.innerHTML = `<span style="color:#10b981;">✓ SYSTEM ALL CLEAR: Optimal Latency &lt; 20 ms</span>`;
         alertDesc.innerHTML = `All database engines and n8n pipelines operating within SLA parameters.`;
-        btnAck.innerText = "VIEW LOGS";
-        btnAck.onclick = fetchAndShowLogs;
+        btnAck.style.display = "none";
       }
 
       // Check Resource Limit Thresholds
@@ -3059,8 +3059,7 @@ FileMaker.PerformScriptWithOption(
         banner.classList.add(isDanger ? 'limit-danger' : 'limit-warning');
         alertTitle.innerHTML = `<span style="color:${isDanger ? '#f87171' : '#fbbf24'};">${isDanger ? '🚨 CRITICAL CAPACITY WARNING' : '⚠️ RESOURCE LIMIT WARNING'}</span>`;
         alertDesc.innerHTML = limitAlerts.map(a => a.msg).join(' &bull; ');
-        btnAck.innerText = "VIEW LOGS";
-        btnAck.onclick = fetchAndShowLogs;
+        btnAck.style.display = "none";
       }
 
       // Render Panels
