@@ -521,6 +521,7 @@
     .seg-pro { background: #00e5ff; height: 100%; transition: width 0.4s ease; }
     .seg-web { background: #f59e0b; height: 100%; transition: width 0.4s ease; }
     .seg-api { background: #ec4899; height: 100%; transition: width 0.4s ease; }
+    .seg-fmse { background: #a855f7; height: 100%; transition: width 0.4s ease; }
 
     .metric-card-bottom {
       display: flex;
@@ -1115,7 +1116,9 @@
       display: inline-block;
     }
     .dot-int { background: #34d399; box-shadow: 0 0 6px #34d399; }
-    .dot-ext { background: #60a5fa; box-shadow: 0 0 6px #60a5fa; }
+    .dot-client { background: #60a5fa; box-shadow: 0 0 6px #60a5fa; }
+    .dot-guest { background: #fbbf24; box-shadow: 0 0 6px #fbbf24; }
+    .dot-fmse { background: #c084fc; box-shadow: 0 0 6px #c084fc; }
 
     .sys-badge {
       display: inline-flex;
@@ -1165,10 +1168,68 @@
       color: #34d399;
       border: 1px solid rgba(16, 185, 129, 0.4);
     }
-    .net-pill.external {
+    .net-pill.client {
       background: rgba(59, 130, 246, 0.2);
       color: #60a5fa;
       border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    .net-pill.guest {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .net-pill.fmse {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.45);
+    }
+    .sys-badge.fmse {
+      background: rgba(236, 72, 153, 0.16);
+      border: 1px solid rgba(236, 72, 153, 0.4);
+      color: #f472b6;
+    }
+    .priv-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-left: 6px;
+      background: rgba(148, 163, 184, 0.14);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+    .dur-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .dur-normal {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .dur-mod {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+    .dur-warn {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .dur-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      animation: pulse-red 1.5s infinite;
     }
     .card-limit-tag {
       font-size: 10px;
@@ -1413,11 +1474,13 @@
           <div class="seg-pro" id="segPro" style="width: 20%;" title="Pro Clients: 20"></div>
           <div class="seg-web" id="segWeb" style="width: 12%;" title="WebDirect: 12"></div>
           <div class="seg-api" id="segApi" style="width: 6%;" title="API/n8n: 6"></div>
+          <div class="seg-fmse" id="segFmse" style="width: 0%;" title="FMSE Scripts: 0"></div>
         </div>
         <div class="metric-card-bottom" style="font-size: 10px;">
           <span>Pro: <strong style="color:var(--cyan-bright);" id="cntPro">20</strong></span>
           <span>WebDirect: <strong style="color:var(--amber-accent);" id="cntWeb">12</strong></span>
           <span>API/n8n: <strong style="color:#ec4899;" id="cntApi">6</strong></span>
+          <span>FMSE: <strong style="color:#c084fc;" id="cntFmse">0</strong></span>
         </div>
       </div>
 
@@ -1628,15 +1691,21 @@
                 </div>
 
                 <!-- TABS: All, Internal, External -->
-                <div class="client-tabs" id="clientTabs">
+                <div class="client-tabs" id="clientTabs" style="flex-wrap: wrap;">
                     <button class="client-tab-btn active" data-tab="all" onclick="setClientTab('all')">
                         All Users <span class="tab-counter" id="tabCountAll">0</span>
                     </button>
                     <button class="client-tab-btn" data-tab="internal" onclick="setClientTab('internal')">
-                        <span class="tab-dot dot-int"></span> Internal (LAN/VPN) <span class="tab-counter" id="tabCountInt">0</span>
+                        <span class="tab-dot dot-int"></span> Internal Users <span class="tab-counter" id="tabCountInt">0</span>
                     </button>
-                    <button class="client-tab-btn" data-tab="external" onclick="setClientTab('external')">
-                        <span class="tab-dot dot-ext"></span> External (Remote) <span class="tab-counter" id="tabCountExt">0</span>
+                    <button class="client-tab-btn" data-tab="client" onclick="setClientTab('client')">
+                        <span class="tab-dot dot-client"></span> Client Users <span class="tab-counter" id="tabCountClient">0</span>
+                    </button>
+                    <button class="client-tab-btn" data-tab="guest" onclick="setClientTab('guest')">
+                        <span class="tab-dot dot-guest"></span> Guest Users <span class="tab-counter" id="tabCountGuest">0</span>
+                    </button>
+                    <button class="client-tab-btn" data-tab="fmse" onclick="setClientTab('fmse')">
+                        <span class="tab-dot dot-fmse"></span> FMSE Scripts <span class="tab-counter" id="tabCountFmse">0</span>
                     </button>
                 </div>
             </div>
@@ -1649,16 +1718,17 @@
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; font-family: var(--font-mono);">
                 <thead>
                     <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted);">
-                        <th style="padding: 10px 8px;">Session Identifier</th>
-                        <th style="padding: 10px 8px;">Account Name</th>
+                        <th style="padding: 10px 8px;">Session / Script Name</th>
+                        <th style="padding: 10px 8px;">Account &amp; Role</th>
                         <th style="padding: 10px 8px;">Database</th>
-                        <th style="padding: 10px 8px;">Host / IP Address</th>
+                        <th style="padding: 10px 8px;">User Type / Host IP</th>
                         <th style="padding: 10px 8px;">System / Platform</th>
+                        <th style="padding: 10px 8px;">Active Duration</th>
                         <th style="padding: 10px 8px;">Connect Time</th>
                     </tr>
                 </thead>
                 <tbody id="clientsTableBody">
-                    <tr><td colspan="6" style="padding: 16px; text-align: center; color: var(--text-dim);">Loading clients...</td></tr>
+                    <tr><td colspan="7" style="padding: 16px; text-align: center; color: var(--text-dim);">Loading clients...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -2209,19 +2279,55 @@ FileMaker.PerformScriptWithOption(
       renderClientsTable();
     }
 
+        const USER_CLASSIFICATION_RULES = {
+      internalPrivSets: ['[full access]', 'lexi internal', 'lexi super user', 'lexi master', 'master'],
+      internalAccounts: [
+        'wan adnan', 'karthi selva', 'sanggari', 'vino chandra',
+        'venessa wang', 'sofea', 'sofea haizam', 'jamie chan',
+        'anushiya karana', 'liza kader', 'lc tan', 'wafdi ramli',
+        'masrur hadhri', 'admin it', 'unit test'
+      ],
+      internalOfficeIPs: []
+    };
+
     function isInternalIP(ip) {
       if (!ip) return false;
       const clean = ip.trim();
       if (clean === '127.0.0.1' || clean === '::1' || clean.toLowerCase() === 'localhost') return true;
-      if (clean.startsWith('10.')) return true;
-      if (clean.startsWith('192.168.')) return true;
+      if (clean.startsWith('10.') || clean.startsWith('192.168.')) return true;
       if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(clean)) return true;
       if (clean.endsWith('.internal') || clean.endsWith('.local') || clean.includes('lan')) return true;
+      if (USER_CLASSIFICATION_RULES.internalOfficeIPs.includes(clean)) return true;
       return false;
     }
 
+    function classifyUserSession(client) {
+      const typeStr = ((client.clientType || '') + ' ' + (client.ipAddress || '') + ' ' + (client.computerName || '')).toUpperCase();
+      const acc = (client.accountName || '').trim().toLowerCase();
+      const priv = (client.privsetName || '').trim().toLowerCase();
+      const ip = (client.ipAddress || '').trim();
+
+      if (typeStr.includes('FMSE') || typeStr.includes('SASE') || typeStr.includes('FILEMAKER SCRIPT') || typeStr.includes('SERVER SCRIPT')) {
+        return { category: 'fmse', label: 'FMSE SCRIPT', pillClass: 'fmse' };
+      }
+      if (acc === '[guest]' || acc === 'guest' || acc.includes('[guest]')) {
+        return { category: 'guest', label: 'GUEST', pillClass: 'guest' };
+      }
+      if (
+        (priv && USER_CLASSIFICATION_RULES.internalPrivSets.includes(priv)) ||
+        (acc && USER_CLASSIFICATION_RULES.internalAccounts.includes(acc)) ||
+        isInternalIP(ip)
+      ) {
+        return { category: 'internal', label: 'INTERNAL', pillClass: 'internal' };
+      }
+      return { category: 'client', label: 'CLIENT', pillClass: 'client' };
+    }
+
     function detectSystemPlatform(client) {
-      const type = ((client.clientType || '') + ' ' + (client.sessionIdentifier || '')).toUpperCase();
+      const type = ((client.clientType || '') + ' ' + (client.sessionIdentifier || '') + ' ' + (client.ipAddress || '')).toUpperCase();
+      if (type.includes('FMSE') || type.includes('SASE') || type.includes('FILEMAKER SCRIPT') || type.includes('PSOS')) {
+        return { name: 'FMSE (Server Script)', css: 'fmse', icon: '⚙️' };
+      }
       if (type.includes('WEBDIRECT') || type.includes('WEBD')) {
         return { name: 'WebDirect (Browser)', css: 'webdirect', icon: '🌐' };
       }
@@ -2237,10 +2343,59 @@ FileMaker.PerformScriptWithOption(
       if (type.includes('XDBC') || type.includes('ODBC') || type.includes('JDBC')) {
         return { name: 'ODBC / JDBC Driver', css: 'api', icon: '🔌' };
       }
-      if (type.includes('SASE') || type.includes('SERVER') || type.includes('PSOS')) {
-        return { name: 'Server Script (PSoS)', css: 'server', icon: '⚙️' };
-      }
       return { name: client.clientType || 'Desktop Client', css: 'pro', icon: '💻' };
+    }
+
+    function formatSessionDuration(client, category) {
+      let totalSeconds = 0;
+      const rawDur = (client.connectDuration || '').trim();
+
+      if (rawDur && rawDur.includes(':')) {
+        const parts = rawDur.split(':').map(p => parseInt(p, 10) || 0);
+        if (parts.length === 3) {
+          totalSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+        } else if (parts.length === 2) {
+          totalSeconds = parts[0] * 60 + parts[1];
+        }
+      } else if (client.connectTime) {
+        const cleanStr = client.connectTime.replace(' ', 'T');
+        const connMs = Date.parse(cleanStr + '+02:00') || Date.parse(cleanStr + 'Z') || Date.parse(cleanStr);
+        if (!isNaN(connMs)) {
+          totalSeconds = Math.max(0, Math.floor((Date.now() - connMs) / 1000));
+        }
+      }
+
+      if (totalSeconds <= 0) {
+        return { html: '<span class="dur-badge dur-normal">⏱ &lt; 1m</span>', totalSeconds: 0 };
+      }
+
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = totalSeconds % 60;
+      const totalMins = totalSeconds / 60;
+
+      let timeText = '';
+      if (hrs > 0) timeText = hrs + 'h ' + String(mins).padStart(2, '0') + 'm ' + String(secs).padStart(2, '0') + 's';
+      else if (mins > 0) timeText = mins + 'm ' + String(secs).padStart(2, '0') + 's';
+      else timeText = secs + 's';
+
+      if (category === 'fmse') {
+        if (totalMins >= 60) {
+          return { html: '<span class="dur-badge dur-danger" title="FMSE Script running over 60 minutes">⚠️ ' + timeText + ' &bull; LONG SCRIPT</span>', totalSeconds };
+        }
+        if (totalMins >= 15) {
+          return { html: '<span class="dur-badge dur-warn" title="FMSE Script running over 15 minutes">⏳ ' + timeText + ' &bull; RUNNING</span>', totalSeconds };
+        }
+        return { html: '<span class="dur-badge dur-normal">⚙️ ' + timeText + '</span>', totalSeconds };
+      } else {
+        if (totalMins >= 240) {
+          return { html: '<span class="dur-badge dur-warn" title="Session open over 4 hours">⏳ ' + timeText + ' &bull; 4h+</span>', totalSeconds };
+        }
+        if (totalMins >= 120) {
+          return { html: '<span class="dur-badge dur-mod" title="Session open 2-4 hours">⏱ ' + timeText + '</span>', totalSeconds };
+        }
+        return { html: '<span class="dur-badge dur-normal">⏱ ' + timeText + '</span>', totalSeconds };
+      }
     }
 
     function renderClientsTable() {
@@ -2249,15 +2404,21 @@ FileMaker.PerformScriptWithOption(
       const allClients = state.connectedUsersData || [];
 
       let intCount = 0;
-      let extCount = 0;
+      let clientCount = 0;
+      let guestCount = 0;
+      let fmseCount = 0;
       let webCount = 0;
       let proCount = 0;
       let goCount = 0;
       let apiCount = 0;
 
       allClients.forEach(c => {
-        if (isInternalIP(c.ipAddress)) intCount++;
-        else extCount++;
+        const cls = classifyUserSession(c);
+        if (cls.category === 'internal') intCount++;
+        else if (cls.category === 'client') clientCount++;
+        else if (cls.category === 'guest') guestCount++;
+        else if (cls.category === 'fmse') fmseCount++;
+
         const sys = detectSystemPlatform(c);
         if (sys.css === 'webdirect') webCount++;
         else if (sys.css === 'pro') proCount++;
@@ -2267,10 +2428,14 @@ FileMaker.PerformScriptWithOption(
 
       const tabAll = document.getElementById('tabCountAll');
       const tabInt = document.getElementById('tabCountInt');
-      const tabExt = document.getElementById('tabCountExt');
+      const tabClient = document.getElementById('tabCountClient');
+      const tabGuest = document.getElementById('tabCountGuest');
+      const tabFmse = document.getElementById('tabCountFmse');
       if (tabAll) tabAll.innerText = allClients.length;
       if (tabInt) tabInt.innerText = intCount;
-      if (tabExt) tabExt.innerText = extCount;
+      if (tabClient) tabClient.innerText = clientCount;
+      if (tabGuest) tabGuest.innerText = guestCount;
+      if (tabFmse) tabFmse.innerText = fmseCount;
 
       const summaryEl = document.getElementById('clientSummaryBar');
       if (summaryEl) {
@@ -2278,9 +2443,13 @@ FileMaker.PerformScriptWithOption(
           <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--text-muted); padding: 8px 12px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid var(--border-subtle);">
             <span>Total Connected: <strong style="color:#fff;">${allClients.length}</strong></span>
             <span>&bull;</span>
-            <span>🏠 Internal (LAN/VPN): <strong style="color:#34d399;">${intCount}</strong></span>
+            <span>🟢 Internal Users: <strong style="color:#34d399;">${intCount}</strong></span>
             <span>&bull;</span>
-            <span>🌍 External (Remote): <strong style="color:#60a5fa;">${extCount}</strong></span>
+            <span>🔵 Client Users: <strong style="color:#60a5fa;">${clientCount}</strong></span>
+            <span>&bull;</span>
+            <span>🟡 Guest Users: <strong style="color:#fbbf24;">${guestCount}</strong></span>
+            <span>&bull;</span>
+            <span>⚙️ FMSE Scripts: <strong style="color:#f472b6;">${fmseCount}</strong></span>
             <span>&bull;</span>
             <span>🌐 WebDirect: <strong style="color:#38bdf8;">${webCount}</strong></span>
             <span>&bull;</span>
@@ -2293,40 +2462,51 @@ FileMaker.PerformScriptWithOption(
       }
 
       const filtered = allClients.filter(c => {
-        if (currentClientTab === 'internal') return isInternalIP(c.ipAddress);
-        if (currentClientTab === 'external') return !isInternalIP(c.ipAddress);
-        return true;
+        if (currentClientTab === 'all') return true;
+        return classifyUserSession(c).category === currentClientTab;
       });
 
       if (filtered.length === 0) {
-        const emptyMsg = currentClientTab === 'internal'
-          ? 'No active internal (LAN / VPN) clients connected.'
-          : (currentClientTab === 'external' ? 'No active external (Remote / WAN) clients connected.' : 'No active clients connected.');
-        tbody.innerHTML = `<tr><td colspan="6" style="padding: 24px; text-align: center; color: var(--text-dim);">${emptyMsg}</td></tr>`;
+        const emptyMap = {
+          all: 'No active clients or scripts connected.',
+          internal: 'No active Internal Users connected.',
+          client: 'No active Client Users connected.',
+          guest: 'No active Guest Users ([Guest]) connected.',
+          fmse: 'No active FMSE Server Scripts currently running.'
+        };
+        tbody.innerHTML = `<tr><td colspan="7" style="padding: 24px; text-align: center; color: var(--text-dim);">${emptyMap[currentClientTab] || 'No matching sessions.'}</td></tr>`;
         return;
       }
 
       tbody.innerHTML = filtered.map(c => {
-        const isInt = isInternalIP(c.ipAddress);
+        const cls = classifyUserSession(c);
         const sys = detectSystemPlatform(c);
+        const dur = formatSessionDuration(c, cls.category);
+        const privBadge = c.privsetName ? `<span class="priv-tag" title="FileMaker Privilege Set">${c.privsetName}</span>` : '';
+        const extraFiles = (c.allDatabases && c.allDatabases.length > 1)
+          ? `<span class="priv-tag" title="${c.allDatabases.join(', ')}">+${c.allDatabases.length - 1} files</span>`
+          : '';
         return `
           <tr style="border-bottom: 1px solid var(--border-subtle); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
             <td style="padding: 10px 8px; color: #fff; font-weight: 500;">${c.sessionIdentifier}</td>
-            <td style="padding: 10px 8px; color: var(--text-bright);">${c.accountName}</td>
-            <td style="padding: 10px 8px; color: var(--cyan-bright);">${c.database}</td>
+            <td style="padding: 10px 8px; color: var(--text-bright);">${c.accountName}${privBadge}</td>
+            <td style="padding: 10px 8px; color: var(--cyan-bright);">${c.database}${extraFiles}</td>
             <td style="padding: 10px 8px;">
-              <span class="net-pill ${isInt ? 'internal' : 'external'}">${isInt ? 'LAN' : 'WAN'}</span>
-              <span style="color: var(--text-muted);">${c.ipAddress}</span>
+              <span class="net-pill ${cls.pillClass}">${cls.label}</span>
+              <span style="color: var(--text-muted);">${c.ipAddress || 'Server Engine'}</span>
             </td>
             <td style="padding: 10px 8px;">
               <span class="sys-badge ${sys.css}">${sys.icon} ${sys.name}</span>
+            </td>
+            <td style="padding: 10px 8px;">
+              ${dur.html}
             </td>
             <td style="padding: 10px 8px; color: var(--text-dim);">${c.connectTime ? c.connectTime.replace('T', ' ') : 'Active'}</td>
           </tr>
         `;
       }).join('');
     }
-  
+
     function updateDomMetrics() {
       const m = state.metrics;
 
@@ -2370,7 +2550,13 @@ FileMaker.PerformScriptWithOption(
       document.getElementById('segApi').style.width = `${apiPct}%`;
       document.getElementById('cntPro').innerText = m.breakdown.pro;
       document.getElementById('cntWeb').innerText = m.breakdown.web;
-      document.getElementById('cntApi').innerText = m.breakdown.api;
+      document.getElementById('cntApi').innerText = m.breakdown.api || 0;
+      const fmseVal = m.breakdown.fmse !== undefined ? m.breakdown.fmse : (state.connectedUsersData || []).filter(c => classifyUserSession(c).category === 'fmse').length;
+      const fmsePct = Math.min(100, (fmseVal / maxCap) * 100);
+      const segFmseEl = document.getElementById('segFmse');
+      if (segFmseEl) segFmseEl.style.width = `${fmsePct}%`;
+      const cntFmseEl = document.getElementById('cntFmse');
+      if (cntFmseEl) cntFmseEl.innerText = fmseVal;
 
       // CPU
       document.getElementById('valCpu').innerText = m.cpu.toFixed(1);
