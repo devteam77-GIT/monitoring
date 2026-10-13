@@ -1134,65 +1134,98 @@
     let currentServerFilter = 'all';
     let currentSearchQuery = '';
 
-    // Configurable rules to differentiate Internal Users vs Client Users
-    const USER_CLASSIFICATION_RULES = {
-      // 1. FileMaker Privilege Sets assigned to Internal Lexi Staff / Developers
-      internalPrivSets: [
-        '[full access]',
-        'lexi internal',
-        'lexi super user',
-        'lexi master',
-        'master'
-      ],
-      // 2. Known Internal Staff Account Names (case-insensitive)
-      internalAccounts: [
-        'wan adnan', 'karthi selva', 'sanggari', 'vino chandra',
-        'venessa wang', 'sofea', 'sofea haizam', 'jamie chan',
-        'anushiya karana', 'liza kader', 'lc tan', 'wafdi ramli',
-        'masrur hadhri', 'admin it', 'unit test'
-      ],
-      // 3. Optional Office Public IPs (can add static office WAN IPs here if desired)
-      internalOfficeIPs: []
-    };
+        // Internal Users Directory from users_13_10_2026 04_18_28.csv (+ Windows User)
+    const INTERNAL_USER_IDENTIFIERS = new Set([
+      "windows user","subhash paramasivam","admin.it","admin it","adminit","admin","ai",
+      "albert.jack","albert jack","albertjack","albert","alia.saleh","alia saleh","aliasaleh","alia",
+      "anders.ekenberg","anders ekenberg","andersekenberg","anders","aneisha.kadir","aneisha kadir","aneishakadir","aneisha",
+      "anushiya.karana","anushiya karana","anushiyakarana","anushiya","api","arizan.aris","arizan aris","arizanaris","arizan",
+      "arshad.ali","arshad ali","arshadali","arshad","ashana.menon","ashana menon","ashanamenon","ashana",
+      "axel.leon","axel leon","axelleon","axel","bomlexi","bom","camilla.johansson","camilla johansson","camillajohansson","camilla",
+      "chan.zhou","chan zhou","chanzhou","chan","chandran.soosai","chandran soosai","chandransoosai","chandran",
+      "danial.haniffa","danial haniffa","danialhaniffa","danial","dennis.visalan","dennis visalan","dennisvisalan","dennis",
+      "devus.lee","devus lee","devuslee","devus","dina.idris","dina idris","dinaidris","dina","elsa","elsa lexi","elsalexi",
+      "faiz.jamaludin","faiz jamaludin","faizjamaludin","faiz","farrah.wei","farrah wei","farrahwei","farrah",
+      "fatin.redzuan","fatin redzuan","fatinredzuan","fatin","fina.sofian","fina sofian","finasofian","fina",
+      "finance.my","finance my","financemy","finance","geraldine.lau","geraldine lau","geraldinelau","geraldine",
+      "goran.felldin","goran felldin","göran felldin","göranfelldin","göran","grace.sawyer","grace sawyer","gracesawyer","grace",
+      "hash.parama","hash parama","hashparama","hash","hendrik.trepp","hendrik trepp","hendriktrepp","hendrik",
+      "hikmah.azizan","hikmah azizan","hikmahazizan","hikmah","ikhwan.fadzli","ikhwan fadzli","ikhwanfadzli","ikhwan",
+      "jamie.chan","jamie chan","jamiechan","jamie","jeffrey.seetoh","jeffrey seetoh","jeffrey see toh","jeffreysee toh","jeffrey",
+      "jens.faxhag","jens faxhag","jensfaxhag","jens","jesney.kuek","jesney kuek","jesneykuek","jesney",
+      "joergen.samsioe","joergen samsioe","jörgen samsioe","jörgensamsioe","jörgen","karri.suosara","karri suosara","karrisuosara","karri",
+      "karthi.selva","karthi selva","karthiselva","karthi","kenny.lee","kenny lee","kennylee","kenny",
+      "ker.sing","ker sing","kersing","kevin.sj","kevin sj","kevinsj","kevin","law.shun","law shun","lawshun",
+      "lc.tan","lc tan","lctan","lee.zichun","lee zichun","lee zi chun","leezi chun","lexi.arcade","lexi arcade","lexiarcade","lexi",
+      "lexibackup","lexi backup","lexibackup2","lexi backup 2","lexibackup 2","data.collection","data collection",
+      "lexi data collection","lexi datacollection","lexi data","lexi.bi","lexi bi","ps5","lexi.upload","lexi upload","lexiupload",
+      "lexter.quah","lexter quah","lexterquah","lexter","liza.kader","liza kader","lizakader","liza",
+      "lohgain.hari","lohgain hari","lohgainhari","lohgain","lorraine.scully","lorraine scully","lorrainescully","lorraine",
+      "masrur.hadhri","masrur hadhri","masrurhadhri","masrur","maveeka.chan","maveeka chan","maveeka chanthrasuwan","maveekachanthrasuwan","maveeka",
+      "mavis.lee","mavis lee","mavislee","mavis","miniconference","nabila.husna","nabila husna","nabilahusna","nabila",
+      "naga.lisaha","naga lisaha","nagalisaha","naga","naim.iszhal","naim iszhal","naimiszhal","naim",
+      "nasyida.ayoob","nasyida ayoob","nasyidaayoob","nasyida","ninnie.karlsson","ninnie karlsson","ninniekarlsson","ninnie",
+      "niza.mohamad","niza mohamad","nizamohamad","niza","ola.samnelius","ola samnelius","olasamnelius",
+      "one.drive","one drive","onedrive","penang","per.norling","per norling","pernorling",
+      "peter.r","peter r","peterr","peter","peter.roeing","peter roeing","peterroeing","peter.roing","peter roing","peter röing","peterröing",
+      "peter.tan","peter tan","petertan","philip.brodd","philip brodd","philipbrodd","philip",
+      "raj.cheladorai","raj cheladorai","rajcheladorai","razin.razli","razin razli","razinrazli","razin",
+      "renga.singam","renga singam","rengasingam","renga","ridzuan.kamaruddin","ridzuan kamaruddin","ridzuankamaruddin","ridzuan",
+      "rizu.yeop","rizu yeop","ridzuan yeop","ridzuanyeop","saa.cheah","saa cheah","saacheah",
+      "sanggari.v","sanggari v","sanggari velachamy","sanggarivelachamy","sanggari","sarah.shamala","sarah shamala","sarahshamala","sarah",
+      "shafiq.wazzan","shafiq wazzan","shafiqwazzan","shafiq","shafiqah.nadzri","shafiqah nadzri","shafiqahnadzri","shafiqah",
+      "shakina.zaki","shakina zaki","shakinazaki","shakina","shanon.liew","shanon liew","shanonliew","shanon",
+      "sharif","sharif.razif","sharif razif","sharifrazif","sofea","sofea haizam","sofeahaizam",
+      "sonja.altgassen","sonja altgassen","sonjaaltgassen","sonja","stefan","steve.yem","steve yem","steveyem","steve",
+      "roomstockholm","sue.masoothu","sue masoothu","suemasoothu","sundraj.neemal","sundraj neemal","sundrajneemal","sundraj",
+      "support","svante.nilsson","svante nilsson","svantenilsson","svante","syamira.rahim","syamira rahim","syamirarahim","syamira",
+      "test","thurga.nagaya","thurga nagaya","thurganagaya","thurga","usha.nandhini","usha nandhini","ushanandhini","usha",
+      "venessa.wang","venessa wang","venessawang","venessa","vino.chandra","vino chandra","vinochandra","vino",
+      "viracot.swat","viracot swat","viracotswat","viracot","vishnu.nair","vishnu nair","vishnunair","vishnu",
+      "wafdi.ramli","wafdi ramli","wafdiramli","wafdi","wan.adnan","wan adnan","wanadnan",
+      "wayne.chong","wayne chong","waynechong","wayne","yang.jauhary","yang jauhary","yangjauhary","yang",
+      "yoshini.nallapan","yoshini nallapan","yoshininallapan","yoshini","zack.roing","zack roing","zackroing","zack",
+      "zuraidah.aman","zuraidah aman","zuraidahaman","zuraidah","unit test"
+    ]);
 
-    function isInternalIP(ip) {
-      if (!ip) return false;
-      const clean = ip.trim();
-      if (clean === '127.0.0.1' || clean === '::1' || clean.toLowerCase() === 'localhost') return true;
-      if (clean.startsWith('10.') || clean.startsWith('192.168.')) return true;
-      if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(clean)) return true;
-      if (clean.endsWith('.internal') || clean.endsWith('.local') || clean.includes('lan')) return true;
-      if (USER_CLASSIFICATION_RULES.internalOfficeIPs.includes(clean)) return true;
+    function isInternalUserMatch(val) {
+      if (!val) return false;
+      const clean = val.trim().toLowerCase();
+      if (!clean || clean === "n/a" || clean === "unknown" || clean === "user") return false;
+      if (clean.endsWith("@lexisolution.com")) return true;
+      const withoutDomain = clean.includes("@") ? clean.split("@")[0] : clean;
+      if (
+        INTERNAL_USER_IDENTIFIERS.has(clean) ||
+        INTERNAL_USER_IDENTIFIERS.has(withoutDomain) ||
+        INTERNAL_USER_IDENTIFIERS.has(withoutDomain.replace(/\./g, " "))
+      ) {
+        return true;
+      }
       return false;
     }
 
     function classifyUserSession(client) {
-      const typeStr = ((client.clientType || '') + ' ' + (client.ipAddress || '') + ' ' + (client.computerName || '')).toUpperCase();
-      const acc = (client.accountName || '').trim().toLowerCase();
-      const priv = (client.privsetName || '').trim().toLowerCase();
-      const ip = (client.ipAddress || '').trim();
+      const typeStr = ((client.clientType || "") + " " + (client.ipAddress || "") + " " + (client.computerName || "")).toUpperCase();
+      const acc = (client.accountName || "").trim().toLowerCase();
+      const sess = (client.sessionIdentifier || "").trim().toLowerCase();
 
       // 1. Server Script (FMSE / PSoS / Scheduled Script)
-      if (typeStr.includes('FMSE') || typeStr.includes('SASE') || typeStr.includes('FILEMAKER SCRIPT') || typeStr.includes('SERVER SCRIPT')) {
-        return { category: 'fmse', label: 'FMSE SCRIPT', pillClass: 'fmse' };
+      if (typeStr.includes("FMSE") || typeStr.includes("SASE") || typeStr.includes("FILEMAKER SCRIPT") || typeStr.includes("SERVER SCRIPT")) {
+        return { category: "fmse", label: "FMSE SCRIPT", pillClass: "fmse" };
       }
 
-      // 2. Guest Account ([Guest])
-      if (acc === '[guest]' || acc === 'guest' || acc.includes('[guest]')) {
-        return { category: 'guest', label: 'GUEST', pillClass: 'guest' };
+      // 2. Guest Account ([Guest] or guest)
+      if (acc === "[guest]" || acc === "guest" || acc.includes("guest") || sess === "[guest]" || sess === "guest") {
+        return { category: "guest", label: "GUEST", pillClass: "guest" };
       }
 
-      // 3. Internal Users (Matched by FileMaker Privilege Set, Internal Staff Account, or Local/Office IP)
-      if (
-        (priv && USER_CLASSIFICATION_RULES.internalPrivSets.includes(priv)) ||
-        (acc && USER_CLASSIFICATION_RULES.internalAccounts.includes(acc)) ||
-        isInternalIP(ip)
-      ) {
-        return { category: 'internal', label: 'INTERNAL', pillClass: 'internal' };
+      // 3. Internal Users (Matched by CSV Email / Name list or Windows User)
+      if (isInternalUserMatch(acc) || isInternalUserMatch(sess)) {
+        return { category: "internal", label: "INTERNAL", pillClass: "internal" };
       }
 
-      // 4. Client Users (External Customers / Standard User or Data Entry accounts)
-      return { category: 'client', label: 'CLIENT', pillClass: 'client' };
+      // 4. Client Users (All other accounts not in Internal CSV list or Guest)
+      return { category: "client", label: "CLIENT", pillClass: "client" };
     }
 
     function detectSystemPlatform(client) {
