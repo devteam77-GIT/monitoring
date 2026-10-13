@@ -967,22 +967,26 @@
             <div>
               <div class="m-label">CPU USAGE</div>
               <div class="m-value" id="cpu-${s.id}">--%</div>
+              <div class="m-sub" id="cpu-sub-${s.id}">Host Load</div>
               <div class="bar-bg"><div class="bar-fill" id="cpu-bar-${s.id}" style="width: 0%; background: #3b82f6;"></div></div>
             </div>
             <div>
               <div class="m-label">MEMORY USAGE</div>
               <div class="m-value" id="ram-${s.id}">-- GB</div>
+              <div class="m-sub" id="ram-sub-${s.id}">Capacity: -- GB</div>
               <div class="bar-bg"><div class="bar-fill" id="ram-bar-${s.id}" style="width: 0%; background: #8b5cf6;"></div></div>
             </div>
             <div>
-              <div class="m-label">ACTIVE SESSIONS</div>
-              <div class="m-value" id="sess-${s.id}">--</div>
-              <div class="m-sub">Connections</div>
+              <div class="m-label">DISK STORAGE (C:)</div>
+              <div class="m-value" id="disk-${s.id}" style="font-size: 16px;">-- / -- GB</div>
+              <div class="m-sub" id="disk-sub-${s.id}">Free: -- GB</div>
+              <div class="bar-bg"><div class="bar-fill" id="disk-bar-${s.id}" style="width: 0%; background: #14b8a6;"></div></div>
             </div>
             <div>
-              <div class="m-label">ELAPSED TIME</div>
-              <div class="m-value" id="elap-${s.id}">-- ms</div>
-              <div class="m-sub">Latency</div>
+              <div class="m-label">ACTIVE SESSIONS</div>
+              <div class="m-value" id="sess-${s.id}">-- <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">/ --</span></div>
+              <div class="m-sub" id="elap-${s.id}">Latency: -- ms</div>
+              <div class="bar-bg"><div class="bar-fill" id="sess-bar-${s.id}" style="width: 0%; background: #f59e0b;"></div></div>
             </div>
           </div>
         </div>
@@ -1057,26 +1061,34 @@
 
       const cpuNum = parseFloat(m.cpu || 0);
       const ramUsedNum = parseFloat(m.ramUsed || 0);
-      const ramTotalNum = parseFloat(m.ramTotal || 64);
+      const ramTotalNum = parseFloat(m.ramTotal || 16);
       const ramPct = ramTotalNum > 0 ? (ramUsedNum / ramTotalNum) * 100 : 0;
       const diskUsedNum = Math.max(0, parseFloat(m.diskUsed || 0));
       const diskTotalNum = parseFloat(m.diskTotal || 100);
+      const diskFreeNum = m.diskFree !== undefined ? parseFloat(m.diskFree) : Math.max(0, diskTotalNum - diskUsedNum);
       const diskPct = diskTotalNum > 0 ? (diskUsedNum / diskTotalNum) * 100 : 0;
       const sessNum = parseInt(m.sessions || 0, 10);
-      const sessMax = parseInt(m.sessionsMax || 100, 10);
+      const sessMax = parseInt(m.sessionsMax || 25, 10);
       const sessPct = sessMax > 0 ? (sessNum / sessMax) * 100 : 0;
 
       serverSessionsCountMap[server.id] = sessNum;
       updateHeaderKPIs();
 
       document.getElementById(`cpu-${server.id}`).innerText = cpuNum.toFixed(1) + '%';
+      document.getElementById(`cpu-sub-${server.id}`).innerText = `Cache Hit: ${parseFloat(m.cacheHit !== undefined ? m.cacheHit : 100).toFixed(0)}%`;
       document.getElementById(`cpu-bar-${server.id}`).style.width = Math.min(100, cpuNum) + '%';
 
-      document.getElementById(`ram-${server.id}`).innerText = ramUsedNum.toFixed(1) + ' GB';
+      document.getElementById(`ram-${server.id}`).innerText = `${ramUsedNum.toFixed(1)} GB`;
+      document.getElementById(`ram-sub-${server.id}`).innerText = `of ${ramTotalNum.toFixed(1)} GB (${ramPct.toFixed(0)}%)`;
       document.getElementById(`ram-bar-${server.id}`).style.width = Math.min(100, ramPct) + '%';
 
-      document.getElementById(`sess-${server.id}`).innerText = sessNum;
-      document.getElementById(`elap-${server.id}`).innerText = (m.elapsed || 0) + ' ms';
+      document.getElementById(`disk-${server.id}`).innerText = `${diskUsedNum.toFixed(0)} / ${diskTotalNum.toFixed(0)} GB`;
+      document.getElementById(`disk-sub-${server.id}`).innerText = `Free: ${diskFreeNum.toFixed(1)} GB (${diskPct.toFixed(0)}%)`;
+      document.getElementById(`disk-bar-${server.id}`).style.width = Math.min(100, diskPct) + '%';
+
+      document.getElementById(`sess-${server.id}`).innerHTML = `${sessNum} <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">/ ${sessMax}</span>`;
+      document.getElementById(`elap-${server.id}`).innerText = `Latency: ${parseFloat(m.elapsed || 0).toFixed(1)} ms`;
+      document.getElementById(`sess-bar-${server.id}`).style.width = Math.min(100, sessPct) + '%';
 
       // Check resource limit thresholds
       const sAlerts = [];
@@ -1110,6 +1122,8 @@
       // Adjust bar colors dynamically based on limit
       document.getElementById(`cpu-bar-${server.id}`).style.background = cpuNum >= 85 ? '#ef4444' : (cpuNum >= 75 ? '#f59e0b' : '#3b82f6');
       document.getElementById(`ram-bar-${server.id}`).style.background = ramPct >= 88 ? '#ef4444' : (ramPct >= 80 ? '#f59e0b' : '#8b5cf6');
+      document.getElementById(`disk-bar-${server.id}`).style.background = diskPct >= 90 ? '#ef4444' : (diskPct >= 82 ? '#f59e0b' : '#14b8a6');
+      document.getElementById(`sess-bar-${server.id}`).style.background = sessPct >= 85 ? '#ef4444' : (sessPct >= 75 ? '#f59e0b' : '#f59e0b');
 
       const sIndex = servers.findIndex(s => s.id === server.id);
       updateChartData(sIndex, m.cpu, m.ramUsed, m.ramTotal);
@@ -1452,7 +1466,7 @@
 
     async function pollServer(server) {
       try {
-        const cacheKey = 'fms_cache_live_' + server.host;
+        const cacheKey = 'fms_cache_v4_' + server.host;
         
         // Show cached immediately if available
         try {
@@ -1495,7 +1509,7 @@
     // Preload cached cards immediately
     servers.forEach(s => {
       try {
-        const c = localStorage.getItem('fms_cache_live_' + s.host);
+        const c = localStorage.getItem('fms_cache_v4_' + s.host);
         if (c) renderServerCard(s, JSON.parse(c));
       } catch(e) {}
     });
