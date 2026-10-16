@@ -671,9 +671,6 @@
         <span id="themeLabel">Light Theme</span>
       </button>
 
-      <button class="header-btn" onclick="toggleTVFullscreen()" title="Toggle Fullscreen for Wall TV Projection">
-        <span>⛶ TV Mode</span>
-      </button>
     </div>
   </header>
 
@@ -827,13 +824,6 @@
       applyTheme(next);
     }
 
-    function toggleTVFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
-    }
 
     let autoScrollInterval = null;
     let autoScrollDir = 1;

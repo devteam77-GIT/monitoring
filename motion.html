@@ -1363,19 +1363,6 @@
       color: #0f172a !important;
     }
 
-    /* TV MODE COMPACT LAYOUT */
-    body.tv-mode .dashboard-container {
-      max-width: 100%;
-      padding: 10px 16px;
-      gap: 12px;
-    }
-    body.tv-mode .metric-card {
-      min-height: 108px;
-      padding: 12px 14px;
-    }
-    body.tv-mode .metric-value {
-      font-size: 24px;
-    }
     .btn-action.active-toggle {
       background: rgba(0, 229, 255, 0.15);
       border-color: var(--cyan-bright);
@@ -1493,9 +1480,6 @@
           <span id="themeLabel">Light</span>
         </button>
 
-        <button class="btn-action" id="btnTvMode" onclick="toggleFullscreen()" title="Toggle Fullscreen TV Display Mode">
-          ⛶ TV Mode
-        </button>
       </div>
     </header>
 
@@ -2067,7 +2051,7 @@ FileMaker.PerformScriptWithOption(
     };
 
     /* ==========================================================================
-       THEME & TV MODE SYNC (Shared with Fleet Overview index.html)
+       THEME SYNC (Shared with Fleet Overview index.html)
        ========================================================================== */
     let currentTheme = localStorage.getItem('fms_fleet_theme') || 'dark';
 
@@ -3259,20 +3243,6 @@ FileMaker.PerformScriptWithOption(
     function onDatabaseClick(dbName) {
       sendActionToFileMaker("INSPECT_DATABASE", { filename: dbName });
       showToast(`Database: ${dbName}`);
-    }
-
-    function toggleFullscreen() {
-      const btn = document.getElementById('btnTvMode');
-      document.body.classList.toggle('tv-mode');
-      const isTv = document.body.classList.contains('tv-mode');
-      if (btn) btn.classList.toggle('active-toggle', isTv);
-
-      if (!document.fullscreenElement && isTv) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else if (document.fullscreenElement && !isTv) {
-        if (document.exitFullscreen) document.exitFullscreen();
-      }
-      setTimeout(resizeCanvas, 150);
     }
 
     function exportDataJson() {
