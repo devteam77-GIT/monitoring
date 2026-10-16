@@ -129,17 +129,9 @@
 
     /* 5-Column Smart TV Grid: Row 1 = 5 Servers, Row 2 = 2 Servers + 3-Col Chart */
     .grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 14px;
-    }
-    @media (max-width: 1350px) {
-      .grid {
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      }
-      .chart-grid-card {
-        grid-column: 1 / -1 !important;
-      }
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 12px;
     }
 
     .server-card {
@@ -165,7 +157,7 @@
     }
 
     .chart-grid-card {
-      grid-column: span 3;
+      grid-column: span 3 !important;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
