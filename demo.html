@@ -1460,6 +1460,7 @@
           </button>
           <div id="restartMenu" style="display: none; position: absolute; top: 110%; right: 0; background: #0f172a; border: 1px solid #f87171; border-radius: 6px; padding: 4px 0; z-index: 1000; min-width: 185px; box-shadow: 0 8px 24px rgba(0,0,0,0.65);">
             <div style="padding: 8px 12px; cursor: pointer; color: #f1f5f9; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);" onmouseover="this.style.background='rgba(248,113,113,0.15)'" onmouseout="this.style.background='transparent'" onclick="restartFMService('fmse')">Restart FMSE (Script Engine)</div>
+            <div style="padding: 8px 12px; cursor: pointer; color: #f1f5f9; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);" onmouseover="this.style.background='rgba(248,113,113,0.15)'" onmouseout="this.style.background='transparent'" onclick="restartFMService('wpe')">Restart WPE (Web Publishing Engine)</div>
             <div style="padding: 8px 12px; cursor: pointer; color: #f1f5f9; font-size: 12px;" onmouseover="this.style.background='rgba(248,113,113,0.15)'" onmouseout="this.style.background='transparent'" onclick="restartFMService('adminserver')">Restart Admin Server</div>
           </div>
         </div>
@@ -3287,7 +3288,13 @@ FileMaker.PerformScriptWithOption(
 
     async function restartFMService(serviceName) {
       document.getElementById('restartMenu').style.display = 'none';
-      if (!confirm(`Are you sure you want to restart '${serviceName}' on ${state.serverName} (${state.serverHost})?`)) return;
+
+      let svcLabel = serviceName.toUpperCase();
+      if (serviceName === 'fmse') svcLabel = 'FMSE (Script Engine)';
+      else if (serviceName === 'wpe') svcLabel = 'WPE (Web Publishing Engine / WebDirect)';
+      else if (serviceName === 'adminserver') svcLabel = 'Admin Server';
+
+      if (!confirm(`Are you sure you want to restart '${svcLabel}' on ${state.serverName} (${state.serverHost})?\n\nThis will execute: fmsadmin restart ${serviceName} -y`)) return;
 
       const pwd = prompt("Security Check:\nEnter the Admin Password to authorize restart:");
       if (pwd !== "MasterBOM2026") {
@@ -3295,7 +3302,7 @@ FileMaker.PerformScriptWithOption(
         return;
       }
 
-      showToast(`Initiating restart for ${serviceName} on ${state.serverName}...`);
+      showToast(`Initiating restart for ${svcLabel} on ${state.serverName}...`);
       const restartWebhook = state.restartWebhookUrl;
 
       try {
@@ -3307,10 +3314,10 @@ FileMaker.PerformScriptWithOption(
 
         if (res.ok) {
           const data = await res.json();
-          showToast(`Successfully restarted ${serviceName} on ${state.serverName}!`);
+          showToast(`Successfully restarted ${svcLabel} on ${state.serverName}!`);
           console.log("Restart output:", data);
         } else {
-          showToast(`Failed to restart ${serviceName}. HTTP ${res.status}`);
+          showToast(`Failed to restart ${svcLabel}. HTTP ${res.status}`);
         }
       } catch (err) {
         showToast(`Network error triggering restart: ${err.message}`);
