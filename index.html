@@ -796,6 +796,53 @@
   const TOKEN_KEY = 'fms_mon_auth_token';
   const USER_KEY = 'fms_mon_auth_user';
 
+  // Intercept all monitoring webhook fetches to attach Bearer token automatically
+  const _origFetch = window.fetch.bind(window);
+  window.fetch = function (input, init) {
+    const url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
+    if (url.includes('fms.n8n.lexisolution.com/webhook/fms-') && !url.includes('fms-monitoring-auth')) {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (!token) {
+        return Promise.resolve(new Response(JSON.stringify({ ok: false, error: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }));
+      }
+      const nextInit = Object.assign({}, init || {});
+      const headers = new Headers(nextInit.headers || (typeof input !== 'string' && input && input.headers ? input.headers : undefined));
+      headers.set('Authorization', 'Bearer ' + token);
+      nextInit.headers = headers;
+      return _origFetch(input, nextInit).then((res) => {
+        if (res.status === 401 && typeof window.__fmsLockGate === 'function') {
+          window.__fmsLockGate('Session expired. Please sign in again.');
+        }
+        return res;
+      });
+    }
+    return _origFetch(input, init);
+  };
+
+  // Server-side password verification helper for Restart Service actions (zero hardcoded passwords in HTML)
+  window.fmsVerifyAdminPassword = async function (password) {
+    if (!password) return false;
+    try {
+      const username = localStorage.getItem(USER_KEY) || 'AdminIT';
+      const res = await _origFetch(AUTH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', username, password })
+      });
+      const data = await res.json();
+      if (data && data.ok && data.token) {
+        localStorage.setItem(TOKEN_KEY, data.token);
+        return true;
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
+  };
+
   const gate = document.getElementById('fmsAuthGate');
   const form = document.getElementById('fmsAuthForm');
   const userInput = document.getElementById('fmsAuthUser');
@@ -823,6 +870,7 @@
     }
     setTimeout(() => userInput && userInput.focus(), 50);
   }
+  window.__fmsLockGate = lock;
 
   logoutBtn.addEventListener('click', () => {
     errBox.style.display = 'none';
@@ -836,7 +884,7 @@
     submitBtn.disabled = true;
     submitBtn.textContent = 'Verifying...';
     try {
-      const res = await fetch(AUTH_URL, {
+      const res = await _origFetch(AUTH_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -850,7 +898,8 @@
         localStorage.setItem(TOKEN_KEY, data.token);
         localStorage.setItem(USER_KEY, data.user || 'AdminIT');
         passInput.value = '';
-        unlock(data.user);
+        window.location.reload();
+        return;
       } else {
         errBox.textContent = (data && data.error) || 'Invalid username or password';
         errBox.style.display = 'block';
@@ -874,7 +923,7 @@
       return;
     }
     try {
-      const res = await fetch(AUTH_URL, {
+      const res = await _origFetch(AUTH_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'verify', token: savedToken })
@@ -893,8 +942,7 @@
 </script>
 <!-- FMS_AUTH_GATE_END -->
 
-
-  <header>
+<header>
     <h1>
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
@@ -1857,7 +1905,7 @@
       const msg = document.getElementById('modalRestartMsg');
       const btn = document.getElementById('btnExecuteRestart');
 
-      if (pwd !== 'MasterBOM2026') {
+      if (!(await window.fmsVerifyAdminPassword(pwd))) {
         msg.style.display = 'block';
         msg.style.background = 'rgba(239, 68, 68, 0.15)';
         msg.style.border = '1px solid rgba(239, 68, 68, 0.4)';
