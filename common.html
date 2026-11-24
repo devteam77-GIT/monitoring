@@ -1386,6 +1386,269 @@
   </style>
 </head>
 <body>
+<!-- FMS_AUTH_GATE_START -->
+<style>
+  #fmsAuthGate {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: radial-gradient(circle at top, #0f172a 0%, #020617 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    color: #f8fafc;
+  }
+  #fmsAuthGate.hidden { display: none !important; }
+  .fms-auth-card {
+    width: 100%;
+    max-width: 390px;
+    background: rgba(15, 23, 42, 0.94);
+    border: 1px solid rgba(51, 65, 85, 0.9);
+    border-radius: 16px;
+    padding: 30px 28px 26px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+  }
+  .fms-auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .fms-auth-title {
+    margin: 0 0 6px;
+    font-size: 21px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+  .fms-auth-sub {
+    margin: 0 0 22px;
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+  .fms-auth-field { margin-bottom: 15px; }
+  .fms-auth-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 6px;
+  }
+  .fms-auth-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border-radius: 9px;
+    border: 1px solid #334155;
+    background: #0b1220;
+    color: #f8fafc;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .fms-auth-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+  }
+  .fms-auth-err {
+    display: none;
+    margin: 0 0 14px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.14);
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    color: #fca5a5;
+    font-size: 12.5px;
+  }
+  .fms-auth-btn {
+    width: 100%;
+    padding: 11px 16px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #0ea5e9, #2563eb);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+  .fms-auth-btn:hover { opacity: 0.94; }
+  .fms-auth-btn:disabled { opacity: 0.6; cursor: wait; }
+  #fmsLogoutPill {
+    position: fixed;
+    bottom: 14px;
+    right: 16px;
+    z-index: 99990;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(71, 85, 105, 0.85);
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+  }
+  #fmsLogoutPill button {
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    color: #fca5a5;
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #fmsLogoutPill button:hover {
+    background: rgba(239, 68, 68, 0.32);
+    color: #ffffff;
+  }
+</style>
+
+<div id="fmsAuthGate" aria-modal="true" role="dialog">
+  <form class="fms-auth-card" id="fmsAuthForm" autocomplete="on">
+    <div class="fms-auth-badge">● LexiSolution FMS</div>
+    <h2 class="fms-auth-title">Monitoring Login</h2>
+    <p class="fms-auth-sub">Sign in with your IT administrator account to access live FileMaker Server telemetry.</p>
+    <div id="fmsAuthErr" class="fms-auth-err"></div>
+    <div class="fms-auth-field">
+      <label class="fms-auth-label" for="fmsAuthUser">Username</label>
+      <input class="fms-auth-input" id="fmsAuthUser" name="username" type="text" placeholder="Enter username" autocomplete="username" required />
+    </div>
+    <div class="fms-auth-field">
+      <label class="fms-auth-label" for="fmsAuthPass">Password</label>
+      <input class="fms-auth-input" id="fmsAuthPass" name="password" type="password" placeholder="Enter password" autocomplete="current-password" required />
+    </div>
+    <button class="fms-auth-btn" id="fmsAuthSubmit" type="submit">Sign In</button>
+  </form>
+</div>
+
+<div id="fmsLogoutPill">
+  <span id="fmsAuthUserLabel">AdminIT</span>
+  <button type="button" id="fmsLogoutBtn">Logout</button>
+</div>
+
+<script>
+(function () {
+  const AUTH_URL = 'https://fms.n8n.lexisolution.com/webhook/fms-monitoring-auth';
+  const TOKEN_KEY = 'fms_mon_auth_token';
+  const USER_KEY = 'fms_mon_auth_user';
+
+  const gate = document.getElementById('fmsAuthGate');
+  const form = document.getElementById('fmsAuthForm');
+  const userInput = document.getElementById('fmsAuthUser');
+  const passInput = document.getElementById('fmsAuthPass');
+  const errBox = document.getElementById('fmsAuthErr');
+  const submitBtn = document.getElementById('fmsAuthSubmit');
+  const logoutPill = document.getElementById('fmsLogoutPill');
+  const userLabel = document.getElementById('fmsAuthUserLabel');
+  const logoutBtn = document.getElementById('fmsLogoutBtn');
+
+  function unlock(user) {
+    gate.classList.add('hidden');
+    userLabel.textContent = user || 'AdminIT';
+    logoutPill.style.display = 'inline-flex';
+  }
+
+  function lock(msg) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    logoutPill.style.display = 'none';
+    gate.classList.remove('hidden');
+    if (msg) {
+      errBox.textContent = msg;
+      errBox.style.display = 'block';
+    }
+    setTimeout(() => userInput && userInput.focus(), 50);
+  }
+
+  logoutBtn.addEventListener('click', () => {
+    errBox.style.display = 'none';
+    passInput.value = '';
+    lock();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errBox.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Verifying...';
+    try {
+      const res = await fetch(AUTH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'login',
+          username: userInput.value.trim(),
+          password: passInput.value
+        })
+      });
+      const data = await res.json();
+      if (data && data.ok && data.token) {
+        localStorage.setItem(TOKEN_KEY, data.token);
+        localStorage.setItem(USER_KEY, data.user || 'AdminIT');
+        passInput.value = '';
+        unlock(data.user);
+      } else {
+        errBox.textContent = (data && data.error) || 'Invalid username or password';
+        errBox.style.display = 'block';
+        passInput.value = '';
+        passInput.focus();
+      }
+    } catch (err) {
+      errBox.textContent = 'Unable to reach authentication server. Please try again.';
+      errBox.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign In';
+    }
+  });
+
+  // Verify existing session token on page load
+  (async function checkSession() {
+    const savedToken = localStorage.getItem(TOKEN_KEY);
+    if (!savedToken) {
+      lock();
+      return;
+    }
+    try {
+      const res = await fetch(AUTH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify', token: savedToken })
+      });
+      const data = await res.json();
+      if (data && data.ok) {
+        unlock(data.user || localStorage.getItem(USER_KEY));
+      } else {
+        lock('Session expired. Please sign in again.');
+      }
+    } catch (_) {
+      lock();
+    }
+  })();
+})();
+</script>
+<!-- FMS_AUTH_GATE_END -->
+
 
   <div class="dashboard-container">
     
